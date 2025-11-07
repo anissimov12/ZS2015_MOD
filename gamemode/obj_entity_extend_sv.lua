@@ -395,6 +395,11 @@ function meta:RemoveNail(nail, dontremoveentity, removedby)
 			othernails = othernails + 1
 		end
 	end
+	for _, othernail in pairs(ents.FindByClass("prop_electronail")) do
+		if othernail ~= nail and not nail.m_IsRemoving and othernail:GetNailConstraint():IsValid() and othernail:GetNailConstraint() == cons then
+			othernails = othernails + 1
+		end
+	end
 
 	-- Only remove the constraint if it's the last nail.
 	if othernails == 0 and cons:IsValid() then

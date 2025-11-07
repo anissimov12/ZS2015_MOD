@@ -25,6 +25,15 @@ function SWEP:Reload()
 			end
 		end
 	end
+	for _, e in pairs(ents.FindByClass("prop_electronail")) do
+		if not e.m_PryingOut and e:GetParent() == trent then
+			local edist = e:GetActualPos():Distance(tr.HitPos)
+			if not dist or edist < dist then
+				ent = e
+				dist = edist
+			end
+		end
+	end
 
 	if not ent or not gamemode.Call("CanRemoveNail", owner, ent) then return end
 
@@ -133,6 +142,12 @@ function SWEP:SecondaryAttack()
 
 	if trent:IsValid() then
 		for _, nail in pairs(ents.FindByClass("prop_nail")) do
+			if nail:GetParent() == trent and nail:GetActualPos():Distance(tr.HitPos) <= 16 then
+				owner:PrintTranslatedMessage(HUD_PRINTCENTER, "too_close_to_another_nail")
+				return
+			end
+		end
+		for _, nail in pairs(ents.FindByClass("prop_electronail")) do
 			if nail:GetParent() == trent and nail:GetActualPos():Distance(tr.HitPos) <= 16 then
 				owner:PrintTranslatedMessage(HUD_PRINTCENTER, "too_close_to_another_nail")
 				return

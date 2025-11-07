@@ -190,6 +190,11 @@ function meta:IsNailed()
 				return true
 			end
 		end
+		for _, nail in pairs(ents.FindByClass("prop_electronail")) do
+			if nail:IsValid() and (nail.GetAttachEntity and nail:GetAttachEntity() == self or nail.GetBaseEntity and nail:GetBaseEntity() == self) then
+				return true
+			end
+		end
 	end
 
 	return false
