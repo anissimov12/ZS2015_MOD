@@ -144,6 +144,7 @@ GM.HurtEffect = 0
 GM.PrevHealth = 0
 GM.SuppressArsenalTime = 0
 GM.ZombieThirdPerson = false
+GM.HumanThirdPerson = false
 GM.Beats = {}
 
 GM.DeathFog = 0
@@ -1155,12 +1156,26 @@ function GM:PlayerBindPress(pl, bind, wasin)
 		RunConsoleCommand("+zoom")
 		timer.CreateEx("ReleaseZoom", 1, 1, RunConsoleCommand, "-zoom")
 	elseif bind == "+menu_context" then
-		self.ZombieThirdPerson = not self.ZombieThirdPerson
+		if pl:Team() == TEAM_UNDEAD then
+			self.ZombieThirdPerson = not self.ZombieThirdPerson
+		elseif pl:Team() == TEAM_HUMAN then
+			self.HumanThirdPerson = not self.HumanThirdPerson
+		end
 	end
 end
 
 function GM:_ShouldDrawLocalPlayer(pl)
-	return pl:Team() == TEAM_UNDEAD and (self.ZombieThirdPerson or pl:CallZombieFunction("ShouldDrawLocalPlayer")) or pl:IsPlayingTaunt()
+	if pl:IsPlayingTaunt() then
+		return true
+	end
+	
+	if pl:Team() == TEAM_UNDEAD then
+		return self.ZombieThirdPerson or pl:CallZombieFunction("ShouldDrawLocalPlayer")
+	elseif pl:Team() == TEAM_HUMAN then
+		return self.HumanThirdPerson
+	end
+	
+	return false
 end
 
 local roll = 0
