@@ -231,6 +231,8 @@ GM:AddPointShopItem("assaultrifleammo", "assault rifle ammo box", nil, ITEMCAT_A
 GM:AddPointShopItem("rifleammo", "rifle ammo box", nil, ITEMCAT_AMMO, 7, nil, function(pl) pl:GiveAmmo(GAMEMODE.AmmoCache["357"] or 6, "357", true) end, "models/Items/BoxSniperRounds.mdl")
 GM:AddPointShopItem("crossbowammo", "crossbow bolt", nil, ITEMCAT_AMMO, 5, nil, function(pl) pl:GiveAmmo(1, "XBowBolt", true) end, "models/Items/CrossbowRounds.mdl")
 GM:AddPointShopItem("pulseammo", "pulse ammo box", nil, ITEMCAT_AMMO, 7, nil, function(pl) pl:GiveAmmo(GAMEMODE.AmmoCache["pulse"] or 30, "pulse", true) end, "models/Items/combine_rifle_ammo01.mdl")
+GM:AddPointShopItem("nail", "Nail", "It's just 5 nails.", ITEMCAT_AMMO, 12, nil, function(pl) pl:GiveAmmo(3, "GaussEnergy", true) end, "models/crossbow_bolt.mdl").NoClassicMode = true
+GM:AddPointShopItem("50mkit", "50 Medical Kit power", "50 extra power for the Medical Kit.", IITEMCAT_AMMO, 25, nil, function(pl) pl:GiveAmmo(50, "Battery", true) end, "models/healthvial.mdl")
 
 GM:AddPointShopItem("axe", "Axe", nil, ITEMCAT_MELEE, 20, "weapon_zs_axe")
 GM:AddPointShopItem("crowbar", "Crowbar", nil, ITEMCAT_MELEE, 20, "weapon_zs_crowbar")
@@ -238,9 +240,15 @@ GM:AddPointShopItem("stunbaton", "Stun Baton", nil, ITEMCAT_MELEE, 25, "weapon_z
 GM:AddPointShopItem("knife", "Knife", nil, ITEMCAT_MELEE, 5, "weapon_zs_swissarmyknife")
 GM:AddPointShopItem("shovel", "Shovel", nil, ITEMCAT_MELEE, 30, "weapon_zs_shovel")
 GM:AddPointShopItem("sledgehammer", "Sledge Hammer", nil, ITEMCAT_MELEE, 30, "weapon_zs_sledgehammer")
+GM:AddPointShopItem("sawhack", "Sawhack", nil, ITEMCAT_MELEE, 50, "weapon_zs_sawhack")
+GM:AddPointShopItem("bustonstick", "Bust-on-stick", nil, ITEMCAT_MELEE, 75, "weapon_zs_bust")
+GM:AddPointShopItem("megamsher", "Megamsher", nil, ITEMCAT_MELEE, 150, "weapon_zs_megamasher")
 
+GM:AddPointShopItem("medkit", "Medical Kit", nil, ITEMCAT_TOOLS, 50, "weapon_zs_medicalkit")
+GM:AddPointShopItem("medicgun", "Medic Gun", nil, ITEMCAT_TOOLS, 50, "weapon_zs_medicgun")
 GM:AddPointShopItem("crphmr", "Carpenter's Hammer", nil, ITEMCAT_TOOLS, 50, "weapon_zs_hammer").NoClassicMode = true
 GM:AddPointShopItem("wrench", "Mechanic's Wrench", nil, ITEMCAT_TOOLS, 25, "weapon_zs_wrench").NoClassicMode = true
+GM:AddPointShopItem("electrohammer", "Electrohammer", nil, ITEMCAT_TOOLS, 100, "weapon_zs_electrohammer")
 GM:AddPointShopItem("arsenalcrate", "Arsenal Crate", nil, ITEMCAT_TOOLS, 50, "weapon_zs_arsenalcrate")
 GM:AddPointShopItem("resupplybox", "Resupply Box", nil, ITEMCAT_TOOLS, 200, "weapon_zs_resupplybox")
 local item = GM:AddPointShopItem("infturret", "Infrared Gun Turret", nil, ITEMCAT_TOOLS, 50, nil, function(pl)
@@ -250,12 +258,15 @@ local item = GM:AddPointShopItem("infturret", "Infrared Gun Turret", nil, ITEMCA
 end)
 item.NoClassicMode = true
 GM:AddPointShopItem("manhack", "Manhack", nil, ITEMCAT_TOOLS, 45, "weapon_zs_manhack")
+local item_spotlam = GM:AddPointShopItem("spotlam", "Spot Lam", nil, ITEMCAT_TOOLS, 40, "weapon_zs_spotlamp")
+item_spotlam.Countables = "prop_spotlamp"
 GM:AddPointShopItem("barricadekit", "'Aegis' Barricade Kit", nil, ITEMCAT_TOOLS, 125, "weapon_zs_barricadekit")
-GM:AddPointShopItem("nail", "Nail", "It's just one nail.", ITEMCAT_TOOLS, 5, nil, function(pl) pl:GiveAmmo(1, "GaussEnergy", true) end, "models/crossbow_bolt.mdl").NoClassicMode = true
-GM:AddPointShopItem("50mkit", "50 Medical Kit power", "50 extra power for the Medical Kit.", ITEMCAT_TOOLS, 30, nil, function(pl) pl:GiveAmmo(50, "Battery", true) end, "models/healthvial.mdl")
+GM:AddPointShopItem("junkpack", "Junk pack", nil, ITEMCAT_TOOLS, 45, "weapon_zs_boardpack")
 
 GM:AddPointShopItem("grenade", "Grenade", nil, ITEMCAT_OTHER, 60, "weapon_zs_grenade")
 GM:AddPointShopItem("detpck", "Detonation Pack", nil, ITEMCAT_OTHER, 70, "weapon_zs_detpack")
+GM:AddPointShopItem("oxtank", "Oxygen Tank", "Grants significantly more underwater breathing time to the user.", ITEMCAT_OTHER, 35, "weapon_zs_oxygentank")
+GM:AddPointShopItem("stone", "Stone", nil, ITEMCAT_OTHER, 4, "weapon_zs_stone")
 
 
 -- These are the honorable mentions that come at the end of the round.
