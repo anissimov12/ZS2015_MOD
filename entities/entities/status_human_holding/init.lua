@@ -34,19 +34,9 @@ function ENT:Initialize()
 
 	local object = self:GetObject()
 	if object:IsValid() then
-		object.IgnoreMeleeTeam = TEAM_HUMAN
-		object.IgnoreTraces = true
-		object.IgnoreBullets = true
-
 		for _, ent in pairs(ents.FindByClass("logic_pickupdrop")) do
 			if ent.EntityToWatch == object:GetName() and ent:IsValid() then
 				ent:Input("onpickedup", owner, object, "")
-			end
-		end
-
-		for _, ent in pairs(ents.FindByClass("point_propnocollide")) do
-			if ent:IsValid() and ent:GetProp() == object then
-				ent:Remove()
 			end
 		end
 
@@ -57,39 +47,24 @@ function ENT:Initialize()
 
 			self:SetObjectMass(objectphys:GetMass())
 
-			object.PreHoldCollisionGroup = object.PreHoldCollisionGroup or object:GetCollisionGroup()
-			object.PreHoldAlpha = object.PreHoldAlpha or object:GetAlpha()
-			object.PreHoldRenderMode = object.PreHoldRenderMode or object:GetRenderMode()
+			if owner.BuffMuscular or (objectphys:GetMass() <= CARRY_DRAG_MASS and (object:OBBMins():Length() + object:OBBMaxs():Length() <= CARRY_DRAG_VOLUME or object.NoVolumeCarryCheck)) then
+				objectphys:AddGameFlag(FVPHYSICS_PLAYER_HELD)
+				object._OriginalMass = objectphys:GetMass()
 
-			objectphys:AddGameFlag(FVPHYSICS_PLAYER_HELD)
-			object._OriginalMass = objectphys:GetMass()
+				objectphys:EnableGravity(false)
+				objectphys:SetMass(2)
 
-			objectphys:EnableGravity(false)
-			objectphys:SetMass(2)
+				-- Сохраняем и устанавливаем полупрозрачность для поднимаемых пропов
+				object.PreHoldAlpha = object.PreHoldAlpha or object:GetAlpha()
+				object.PreHoldRenderMode = object.PreHoldRenderMode or object:GetRenderMode()
+				object:SetRenderMode(RENDERMODE_TRANSALPHA)
+				object:SetAlpha(180)
 
-			object:SetOwner(owner)
-			object:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-			object:SetRenderMode(RENDERMODE_TRANSALPHA)
-			object:SetAlpha(180)
-
-			self.StartX = owner.InputMouseX or 0
-			self.StartY = owner.InputMouseY or 0
-
-			local children = object:GetChildren()
-			for _, child in pairs(children) do
-				if not child:IsValid() then continue end
-
-				child.PreHoldCollisionGroup = child.PreHoldCollisionGroup or child:GetCollisionGroup()
-				if child:IsPhysicsModel() then -- Stops child sprites from getting fucked up rendering
-					child.PreHoldAlpha = child.PreHoldAlpha or child:GetAlpha()
-					child.PreHoldRenderMode = child.PreHoldRenderMode or child:GetRenderMode()
-
-					child:SetAlpha(180)
-					child:SetRenderMode(RENDERMODE_TRANSALPHA)
-				end
-
-				child:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-				child:CollisionRulesChanged()
+				object:SetOwner(owner)
+			else
+				self:SetIsHeavy(true)
+				self:SetHingePos(object:NearestPoint(self:GetPullPos()))
+				-- Для таскаемых пропов не меняем прозрачность
 			end
 
 			object:CollisionRulesChanged()
@@ -112,30 +87,44 @@ function ENT:OnRemove()
 		end
 	end
 
-	local object = self:GetObject()
-	if object:IsValid() then
-		local objectphys = object:GetPhysicsObject()
-		if objectphys:IsValid() then
-			objectphys:ClearGameFlag(FVPHYSICS_PLAYER_HELD)
-			objectphys:ClearGameFlag(FVPHYSICS_NO_IMPACT_DMG)
-			objectphys:ClearGameFlag(FVPHYSICS_NO_NPC_IMPACT_DMG)
-			objectphys:EnableGravity(true)
-			if object._OriginalMass then
-				objectphys:SetMass(object._OriginalMass)
-				object._OriginalMass = nil
+		local object = self:GetObject()
+		if object:IsValid() then
+			local objectphys = object:GetPhysicsObject()
+			if objectphys:IsValid() then
+				objectphys:ClearGameFlag(FVPHYSICS_PLAYER_HELD)
+				objectphys:ClearGameFlag(FVPHYSICS_NO_IMPACT_DMG)
+				objectphys:ClearGameFlag(FVPHYSICS_NO_NPC_IMPACT_DMG)
+				objectphys:EnableGravity(true)
+				if object._OriginalMass then
+					objectphys:SetMass(object._OriginalMass)
+					object._OriginalMass = nil
+				end
+
+				if not self:GetIsHeavy() then
+					object:GhostAllPlayersInMe(2.5, true)
+				end
+
+				object:SetOwner(NULL)
+				object:CollisionRulesChanged()
 			end
 
-			object:SetOwner(NULL)
-		end
+			-- Восстанавливаем прозрачность при отпуске
+			if object.PreHoldAlpha ~= nil then
+				object:SetAlpha(object.PreHoldAlpha)
+				object.PreHoldAlpha = nil
+			else
+				object:SetAlpha(255)
+			end
 
-		self:RestoreObjectState(object)
+			if object.PreHoldRenderMode ~= nil then
+				object:SetRenderMode(object.PreHoldRenderMode)
+				object.PreHoldRenderMode = nil
+			else
+				object:SetRenderMode(RENDERMODE_NORMAL)
+			end
 
-		if objectphys:IsValid() and not self:GetIsHeavy() then
-			object:GhostAllPlayersInMe(2.5, true)
-		end
-
-		object._LastDroppedBy = owner
-		object._LastDropped = CurTime()
+			object._LastDroppedBy = owner
+			object._LastDropped = CurTime()
 
 		for _, ent in pairs(ents.FindByClass("logic_pickupdrop")) do
 			if ent.EntityToWatch == object:GetName() and ent:IsValid() then
@@ -143,58 +132,6 @@ function ENT:OnRemove()
 			end
 		end
 	end
-end
-
-function ENT:RestoreObjectState(object)
-	if not object:IsValid() then return end
-
-	if object.PreHoldCollisionGroup ~= nil then
-		object:SetCollisionGroup(object.PreHoldCollisionGroup)
-		object.PreHoldCollisionGroup = nil
-	end
-
-	if object.PreHoldRenderMode ~= nil then
-		object:SetRenderMode(object.PreHoldRenderMode)
-		object.PreHoldRenderMode = nil
-	end
-
-	if object.PreHoldAlpha ~= nil then
-		object:SetAlpha(object.PreHoldAlpha)
-		object.PreHoldAlpha = nil
-	else
-		object:SetAlpha(255)
-	end
-
-	object.IgnoreMeleeTeam = nil
-	object.IgnoreTraces = nil
-	object.IgnoreBullets = nil
-
-	local children = object:GetChildren()
-	for _, child in pairs(children) do
-		if not child:IsValid() then continue end
-
-		if child.PreHoldCollisionGroup ~= nil then
-			child:SetCollisionGroup(child.PreHoldCollisionGroup)
-			child.PreHoldCollisionGroup = nil
-		end
-
-		if child.PreHoldRenderMode ~= nil then
-			child:SetRenderMode(child.PreHoldRenderMode)
-			child.PreHoldRenderMode = nil
-	end
-
-		if child.PreHoldAlpha ~= nil then
-			child:SetAlpha(child.PreHoldAlpha)
-			child.PreHoldAlpha = nil
-	else
-			child:SetAlpha(255)
-		end
-
-		child:CollisionRulesChanged()
-	end
-
-	object:CollisionRulesChanged()
-	object.IgnorePlayers = nil
 end
 
 concommand.Add("_zs_rotateang", function(sender, command, arguments)
@@ -269,6 +206,19 @@ function ENT:Think()
 			if not self.ObjectAngles then
 				self.ObjectAngles = object:GetAngles()
 			end
+		end
+
+		-- Выравнивание углов к ближайшему углу, кратному 40 градусам при нажатии R
+		if owner:KeyPressed(IN_RELOAD) then
+			local currentAngles = self.ObjectAngles
+			local snapAngle = 45
+			
+			-- Выравниваем каждую ось к ближайшему углу, кратному 40 градусам
+			local pitch = math.Round(currentAngles.p / snapAngle) * snapAngle
+			local yaw = math.Round(currentAngles.y / snapAngle) * snapAngle
+			local roll = math.Round(currentAngles.r / snapAngle) * snapAngle
+			
+			self.ObjectAngles = Angle(pitch, yaw, roll)
 		end
 
 		if owner:KeyDown(IN_SPEED) then

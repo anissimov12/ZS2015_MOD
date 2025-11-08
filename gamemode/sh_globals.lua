@@ -52,11 +52,11 @@ DEFAULT_MASS = 80
 DEFAULT_MODELSCALE = 1
 
 -- Humans can not carry OR drag anything heavier than this (in kg.)
-CARRY_MAXIMUM_MASS = 1150
+CARRY_MAXIMUM_MASS = 300
 -- Humans can not carry anything with a volume more than this (OBBMins():Length() + OBBMaxs():Length()).
 CARRY_MAXIMUM_VOLUME = 150
 -- Objects with more mass than this will be dragged instead of carried.
-CARRY_DRAG_MASS = 510
+CARRY_DRAG_MASS = 145
 -- Anything bigger than this is dragged regardless of mass.
 CARRY_DRAG_VOLUME = 120
 -- Humans are slowed by this amount per kg carried...
