@@ -139,7 +139,7 @@ end
 function GM:TryHumanPickup(pl, entity)
 	if self.ZombieEscape or pl.NoObjectPickup or not pl:Alive() or pl:Team() ~= TEAM_HUMAN then return end
 
-	if entity:IsValid() then
+	if entity:IsValid() and not entity.m_NoPickup then
 		local entclass = string.sub(entity:GetClass(), 1, 12)
 		if (entclass == "prop_physics" or entclass == "func_physbox" or entity.HumanHoldable and entity:HumanHoldable(pl)) and not entity:IsNailed() and entity:GetMoveType() == MOVETYPE_VPHYSICS and entity:GetPhysicsObject():IsValid() and entity:GetPhysicsObject():GetMass() <= CARRY_MAXIMUM_MASS and entity:OBBMins():Length() + entity:OBBMaxs():Length() <= CARRY_MAXIMUM_VOLUME then
 			local holder, status = entity:GetHolder()
