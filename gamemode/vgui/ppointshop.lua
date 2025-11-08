@@ -188,6 +188,94 @@ function GM:OpenPointsShop()
 
 	local isclassic = GAMEMODE:IsClassicMode()
 
+	-- Helper function to create an item panel
+	local function CreateItemPanel(tab, i, list)
+		local itempan = vgui.Create("DPanel")
+		itempan:SetSize(list:GetWide(), 40)
+		itempan.ID = tab.Signature or i
+		itempan.Think = ItemPanelThink
+		list:AddItem(itempan)
+
+		-- model frame (слева)
+		local mdlframe = vgui.Create("DPanel", itempan)
+		mdlframe:SetSize(32, 32)
+		mdlframe:SetPos(4, 4)
+
+		local weptab = weapons.GetStored(tab.SWEP) or tab
+		local mdl = tab.Model or (weptab and weptab.WorldModel)
+		if mdl then
+			local mdlpanel = vgui.Create("DModelPanel", mdlframe)
+			mdlpanel:SetSize(mdlframe:GetSize())
+			mdlpanel:SetModel(mdl)
+			local mins, maxs = mdlpanel.Entity:GetRenderBounds()
+			mdlpanel:SetCamPos(mins:Distance(maxs) * Vector(0.75, 0.75, 0.5))
+			mdlpanel:SetLookAt((mins + maxs) / 2)
+		end
+
+		if tab.SWEP or tab.Countables then
+			local counter = vgui.Create("ItemAmountCounter", itempan)
+			counter:SetItemID(i)
+		end
+
+		local name = tab.Name or ""
+		local namelab = EasyLabel(itempan, name, "ZSHUDFontSmall", COLOR_WHITE)
+		itempan.m_NameLabel = namelab
+
+		local pricelab = EasyLabel(itempan, tostring(tab.Worth).." Points", "ZSHUDFontTiny")
+		itempan.m_PriceLabel = pricelab
+
+		local button = vgui.Create("DImageButton", itempan)
+		button:SetImage("icon16/lorry_add.png")
+		button:SizeToContents()
+		button:SetTooltip("Purchase "..name)
+		button.ID = itempan.ID
+		button.DoClick = PurchaseDoClick
+		itempan.m_BuyButton = button
+
+		local ammobutton
+		if weptab and weptab.Primary then
+			local ammotype = weptab.Primary.Ammo
+			if ammonames[ammotype] then
+				ammobutton = vgui.Create("DImageButton", itempan)
+				ammobutton:SetImage("icon16/add.png")
+				ammobutton:SizeToContents()
+				ammobutton:SetTooltip("Purchase ammunition")
+				ammobutton.AmmoType = ammonames[ammotype]
+				ammobutton.DoClick = BuyAmmoDoClick
+				itempan.m_AmmoButton = ammobutton
+			end
+		end
+
+		if tab.Description then
+			itempan:SetTooltip(tab.Description)
+		end
+
+		if (tab.NoClassicMode and isclassic) or (tab.NoZombieEscape and GAMEMODE.ZombieEscape) then
+			itempan:SetAlpha(120)
+		end
+
+		function itempan:PerformLayout()
+			self:SetWide(math.max( self:GetWide(), list:GetWide() ))
+
+			local pw, ph = self:GetWide(), self:GetTall()
+
+			mdlframe:SetPos(4, 4)
+
+			namelab:SetPos(42, math.floor(ph * 0.5 - namelab:GetTall() * 0.5))
+
+			pricelab:SizeToContents()
+			pricelab:SetPos(pw - 8 - pricelab:GetWide(), 4)
+
+			button:SizeToContents()
+			button:SetPos(pw - 8 - button:GetWide(), ph - 4 - button:GetTall())
+
+			if ammobutton then
+				ammobutton:SizeToContents()
+				ammobutton:SetPos(button:GetX() - 2 - ammobutton:GetWide(), button:GetY())
+			end
+		end
+	end
+
 	for catid, catname in ipairs(GAMEMODE.ItemCategories) do
 		local hasitems = false
 		for i, tab in ipairs(GAMEMODE.Items) do
@@ -198,80 +286,59 @@ function GM:OpenPointsShop()
 		end
 
 		if hasitems then
-			local list = vgui.Create("DPanelList", propertysheet)
-			list:SetPaintBackground(false)
-			propertysheet:AddSheet(catname, list, GAMEMODE.ItemCategoryIcons[catid], false, false)
-			list:EnableVerticalScrollbar(true)
-			list:SetWide(propertysheet:GetWide() - 16)
-			list:SetSpacing(2)
-			list:SetPadding(2)
-
-			for i, tab in ipairs(GAMEMODE.Items) do
-				if tab.Category == catid and tab.PointShop then
-					local itempan = vgui.Create("DPanel")
-					itempan:SetSize(list:GetWide(), 40)
-					itempan.ID = tab.Signature or i
-					itempan.Think = ItemPanelThink
-					list:AddItem(itempan)
-
-					local mdlframe = vgui.Create("DPanel", itempan)
-					mdlframe:SetSize(32, 32)
-					mdlframe:SetPos(4, 4)
-
-					local weptab = weapons.GetStored(tab.SWEP) or tab
-					local mdl = tab.Model or weptab.WorldModel
-					if mdl then
-						local mdlpanel = vgui.Create("DModelPanel", mdlframe)
-						mdlpanel:SetSize(mdlframe:GetSize())
-						mdlpanel:SetModel(mdl)
-						local mins, maxs = mdlpanel.Entity:GetRenderBounds()
-						mdlpanel:SetCamPos(mins:Distance(maxs) * Vector(0.75, 0.75, 0.5))
-						mdlpanel:SetLookAt((mins + maxs) / 2)
-					end
-
-					if tab.SWEP or tab.Countables then
-						local counter = vgui.Create("ItemAmountCounter", itempan)
-						counter:SetItemID(i)
-					end
-
-					local name = tab.Name or ""
-					local namelab = EasyLabel(itempan, name, "ZSHUDFontSmall", COLOR_WHITE)
-					namelab:SetPos(42, itempan:GetTall() * 0.5 - namelab:GetTall() * 0.5)
-					itempan.m_NameLabel = namelab
-
-					local pricelab = EasyLabel(itempan, tostring(tab.Worth).." Points", "ZSHUDFontTiny")
-					pricelab:SetPos(itempan:GetWide() - 20 - pricelab:GetWide(), 4)
-					itempan.m_PriceLabel = pricelab
-
-					local button = vgui.Create("DImageButton", itempan)
-					button:SetImage("icon16/lorry_add.png")
-					button:SizeToContents()
-					button:SetPos(itempan:GetWide() - 20 - button:GetWide(), itempan:GetTall() - 20)
-					button:SetTooltip("Purchase "..name)
-					button.ID = itempan.ID
-					button.DoClick = PurchaseDoClick
-					itempan.m_BuyButton = button
-
-					if weptab and weptab.Primary then
-						local ammotype = weptab.Primary.Ammo
-						if ammonames[ammotype] then
-							local ammobutton = vgui.Create("DImageButton", itempan)
-							ammobutton:SetImage("icon16/add.png")
-							ammobutton:SizeToContents()
-							ammobutton:CopyPos(button)
-							ammobutton:MoveLeftOf(button, 2)
-							ammobutton:SetTooltip("Purchase ammunition")
-							ammobutton.AmmoType = ammonames[ammotype]
-							ammobutton.DoClick = BuyAmmoDoClick
+			-- Special handling for Guns category with tiers
+			if catid == ITEMCAT_GUNS then
+				-- Create a container panel for the Guns category
+				local gunscontainer = vgui.Create("DPanel", propertysheet)
+				gunscontainer:SetPaintBackground(false)
+				gunscontainer:SetSize(propertysheet:GetWide() - 16, propertysheet:GetTall() - 40)
+				
+				-- Create nested property sheet for tiers
+				local tierpropertysheet = vgui.Create("DPropertySheet", gunscontainer)
+				tierpropertysheet:Dock(FILL)
+				
+				-- Create tier sub-tabs for Guns
+				for tier = 1, 6 do
+					local hasitemsintier = false
+					for i, tab in ipairs(GAMEMODE.Items) do
+						if tab.Category == catid and tab.PointShop and tab.Tier == tier then
+							hasitemsintier = true
+							break
 						end
 					end
 
-					if tab.Description then
-						itempan:SetTooltip(tab.Description)
-					end
+					if hasitemsintier then
+						local list = vgui.Create("DPanelList", tierpropertysheet)
+						list:SetPaintBackground(false)
+						tierpropertysheet:AddSheet("Tier "..tier, list, GAMEMODE.ItemCategoryIcons[catid], false, false)
+						list:EnableVerticalScrollbar(true)
+						list:SetWide(tierpropertysheet:GetWide() - 16)
+						list:SetSpacing(2)
+						list:SetPadding(2)
 
-					if tab.NoClassicMode and isclassic or tab.NoZombieEscape and GAMEMODE.ZombieEscape then
-						itempan:SetAlpha(120)
+						for i, tab in ipairs(GAMEMODE.Items) do
+							if tab.Category == catid and tab.PointShop and tab.Tier == tier then
+								CreateItemPanel(tab, i, list)
+							end
+						end
+					end
+				end
+				
+				-- Add the Guns container as a sheet to the main propertysheet
+				propertysheet:AddSheet(catname, gunscontainer, GAMEMODE.ItemCategoryIcons[catid], false, false)
+			else
+				-- Normal category handling
+				local list = vgui.Create("DPanelList", propertysheet)
+				list:SetPaintBackground(false)
+				propertysheet:AddSheet(catname, list, GAMEMODE.ItemCategoryIcons[catid], false, false)
+				list:EnableVerticalScrollbar(true)
+				list:SetWide(propertysheet:GetWide() - 16)
+				list:SetSpacing(2)
+				list:SetPadding(2)
+
+				for i, tab in ipairs(GAMEMODE.Items) do
+					if tab.Category == catid and tab.PointShop then
+						CreateItemPanel(tab, i, list)
 					end
 				end
 			end
