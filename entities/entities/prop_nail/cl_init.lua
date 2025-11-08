@@ -116,7 +116,7 @@ function ENT:DrawTranslucent()
 			end
 
 			if displayowner then
-				draw.SimpleText(displayowner, "ZS3D2DFont2Smaller", 0, y + 38, redname and COLOR_DARKRED or COLOR_DARKGRAY, TEXT_ALIGN_CENTER)
+				draw.SimpleText(displayowner, "ZS3D2DFont2Smaller", 0, y + 38, redname and COLOR_DARKRED or COLOR_GRAY, TEXT_ALIGN_CENTER)
 			end
 		cam.End3D2D()
 	end

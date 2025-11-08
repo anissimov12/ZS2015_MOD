@@ -85,7 +85,7 @@ function ENT:DrawTranslucent()
 			if self:GetMaxRepairs() > 0 then
 				local repairs = self:GetRepairs()
 				local ru = 1 - math.Clamp(repairs / self:GetMaxRepairs(), 0, 1)
-				surface.SetDrawColor(0, 0, 0, 220)
+				surface.SetDrawColor(26, 161, 212, 220)
 				surface.DrawRect(x, y, wid, hei)
 				surface.SetDrawColor(40, 40, 40, 220)
 				surface.DrawOutlinedRect(x, y, wid, hei)
@@ -105,9 +105,9 @@ function ENT:DrawTranslucent()
 				y = y + hei + 3
 				hei = 8
 				x = wid * -0.5 + 2
-				surface.SetDrawColor(0, 0, 0, 220)
+				surface.SetDrawColor(1, 74, 102, 220)
 				surface.DrawRect(x, y, wid, hei)
-				surface.SetDrawColor(40, 40, 40, 220)
+				surface.SetDrawColor(3, 111, 153, 220)
 				surface.DrawOutlinedRect(x, y, wid, hei)
 				surface.SetDrawColor(colNail)
 				surface.DrawRect(x + 1, y + 1, (wid - 2) * mu, hei - 2)
@@ -116,7 +116,7 @@ function ENT:DrawTranslucent()
 			end
 
 			if displayowner then
-				draw.SimpleText(displayowner, "ZS3D2DFont2Smaller", 0, y + 38, redname and COLOR_DARKRED or COLOR_DARKGRAY, TEXT_ALIGN_CENTER)
+				draw.SimpleText(displayowner, "ZS3D2DFont2Smaller", 0, y + 38, redname and COLOR_DARKRED or COLOR_GRAY, TEXT_ALIGN_CENTER)
 			end
 		cam.End3D2D()
 	end
