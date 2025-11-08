@@ -137,7 +137,7 @@ if SERVER then
 			self:SetNextPrimaryFire(CurTime() + 1)
 			self:TakePrimaryAmmo(1)
 
-			trent:EmitSound("weapons/melee/crowbar/crowbar_hit-"..math.random(4)..".ogg")
+			trent:EmitSound("weapons/melee/crowbar/crowbar_hit-"..math.random(4)..".ogg", nil, nil, math.random(35, 50))
 
 			local nail = ents.Create("prop_electronail")
 			if nail:IsValid() then
@@ -149,6 +149,10 @@ if SERVER then
 				nail:SetDeployer(owner)
 
 				cons:DeleteOnRemove(nail)
+
+				-- Звуки установки электро-гвоздя
+				nail:EmitSound("ambient/energy/zap"..math.random(1, 3)..".wav", 75, math.random(95, 105))
+				nail:EmitSound("npc/dog/dog_servo2.wav", 70, math.random(100, 105))
 
 				gamemode.Call("OnNailCreated", trent, ent, nail)
 			end

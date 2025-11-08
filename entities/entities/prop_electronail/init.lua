@@ -133,6 +133,8 @@ function ENT:AutoRepair()
 	if healed > 0 then
 		baseent:SetBarricadeRepairs(math.max(baseent:GetBarricadeRepairs() - healed, 0))
 		
+		baseent:EmitSound("npc/dog/dog_servo"..math.random(7, 8)..".wav", 70, math.random(100, 105))
+		
 		local effectdata = EffectData()
 		effectdata:SetOrigin(self:GetPos())
 		effectdata:SetNormal(self:GetForward() * -1)
