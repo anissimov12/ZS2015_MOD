@@ -85,9 +85,9 @@ function ENT:DrawTranslucent()
 			if self:GetMaxRepairs() > 0 then
 				local repairs = self:GetRepairs()
 				local ru = 1 - math.Clamp(repairs / self:GetMaxRepairs(), 0, 1)
-				surface.SetDrawColor(26, 161, 212, 220)
+				surface.SetDrawColor(76, 74, 219, 220)
 				surface.DrawRect(x, y, wid, hei)
-				surface.SetDrawColor(40, 40, 40, 220)
+				surface.SetDrawColor(50, 55, 139, 220)
 				surface.DrawOutlinedRect(x, y, wid, hei)
 				surface.SetDrawColor(230, 5, 5, ru == 1 and (150 + math.abs(math.sin(RealTime() * 5)) * 105) or 220)
 				surface.DrawRect(x + 1, y + 1, (wid - 2) * ru, hei - 2)
@@ -105,9 +105,9 @@ function ENT:DrawTranslucent()
 				y = y + hei + 3
 				hei = 8
 				x = wid * -0.5 + 2
-				surface.SetDrawColor(1, 74, 102, 220)
+				surface.SetDrawColor(84, 80, 174, 220)
 				surface.DrawRect(x, y, wid, hei)
-				surface.SetDrawColor(3, 111, 153, 220)
+				surface.SetDrawColor(54, 49, 139, 220)
 				surface.DrawOutlinedRect(x, y, wid, hei)
 				surface.SetDrawColor(colNail)
 				surface.DrawRect(x + 1, y + 1, (wid - 2) * mu, hei - 2)
