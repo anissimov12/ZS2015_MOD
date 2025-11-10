@@ -9,6 +9,9 @@ local function DrawSigilHints()
 end
 
 function ENT:Initialize()
+	self:DrawShadow(false)
+	self:SetRenderFX(kRenderFxDistort)
+
 	-- Scale render bounds based on ModelScale
 	local scale = self.ModelScale
 	self:SetRenderBounds(Vector(-128, -128, -128) * scale, Vector(128, 128, 200) * scale)
@@ -61,18 +64,6 @@ function ENT:DrawTranslucent()
 	local up = self:GetUp()
 	local spritepos = self:GetPos() + up
 	local spritepos2 = self:WorldSpaceCenter()
-
-	local dlight = DynamicLight(self:EntIndex())
-	if dlight then
-		dlight.Pos = self:GetPos()
-		dlight.r = r * 255
-		dlight.g = g * 255
-		dlight.b = b * 255
-		dlight.Brightness = (2 + sat) * healthperc
-		dlight.Size = (100 + sat * 50) * scale
-		dlight.Decay = 400 + sat * 200
-		dlight.DieTime = curtime + 1
-	end
 
 	r = r * healthperc
 	g = g * healthperc
@@ -127,11 +118,8 @@ function ENT:DrawTranslucent()
 	cDrawWhite.b = cDrawWhite.r
 
 	render.SetMaterial(matGlow)
-	render.DrawQuadEasy(spritepos, up, whiteradius, whiteradius, cDrawWhite, self.Rotation)
-	render.DrawQuadEasy(spritepos, up * -1, whiteradius, whiteradius, cDrawWhite, self.Rotation)
 	render.DrawQuadEasy(spritepos, up, radius, radius, cDraw, self.Rotation)
 	render.DrawQuadEasy(spritepos, up * -1, radius, radius, cDraw, self.Rotation)
-	--render.DrawSprite(spritepos2, whiteradius, whiteradius * 2, cDrawWhite)
 	render.DrawSprite(spritepos2, radius, radius * 2, cDraw)
 
 	if curtime < self.NextEmit then return end
