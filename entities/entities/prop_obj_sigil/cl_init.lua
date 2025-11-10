@@ -9,14 +9,9 @@ local function DrawSigilHints()
 end
 
 function ENT:Initialize()
-	self:DrawShadow(false)
-	self:SetRenderFX(kRenderFxDistort)
+	self:SetRenderBounds(Vector(-128, -128, -128), Vector(128, 128, 200))
 
-	-- Scale render bounds based on ModelScale
-	local scale = self.ModelScale
-	self:SetRenderBounds(Vector(-128, -128, -128) * scale, Vector(128, 128, 200) * scale)
-
-	self:SetModelScaleVector(Vector(1, 1, 1) * scale)
+	self:SetModelScaleVector(Vector(1, 1, 1) * self.ModelScale)
 
 	self.AmbientSound = CreateSound(self, "ambient/atmosphere/tunnel1.wav")
 
@@ -49,31 +44,31 @@ local cDrawWhite = Color(255, 255, 255)
 function ENT:DrawTranslucent()
 	self:RemoveAllDecals()
 
-	local scale = self.ModelScale
-
 	local curtime = CurTime()
 	local sat = math.abs(math.sin(curtime))
 	local colsat = sat * 0.125
 	local eyepos = EyePos()
 	local eyeangles = EyeAngles()
-	local forwardoffset = 16 * scale * self:GetForward()
-	local rightoffset = 16 * scale * self:GetRight()
+	local forwardoffset = self:GetForward() * 16
+	local rightoffset = self:GetRight() * 16
 	local healthperc = self:GetSigilHealth() / self:GetSigilMaxHealth()
-	local radius = (180 + math.cos(sat) * 40) * scale
-	local whiteradius = (122 + math.sin(sat) * 32) * scale
+	local r, g, b = 0.15 + colsat, 0.4 + colsat, 1
+	local radius = 180 + math.cos(sat) * 40
+	local whiteradius = 122 + math.sin(sat) * 32
 	local up = self:GetUp()
 	local spritepos = self:GetPos() + up
 	local spritepos2 = self:WorldSpaceCenter()
-	local corrupt = self:GetSigilCorrupted()
-	local r, g, b
-	if corrupt then
-		r = colsat
-		g = 0.75
-		b = colsat
-	else
-		r = 0.15 + colsat
-		g = 0.4 + colsat
-		b = 1
+
+	local dlight = DynamicLight(self:EntIndex())
+	if dlight then
+		dlight.Pos = self:GetPos()
+		dlight.r = r * 255
+		dlight.g = g * 255
+		dlight.b = b * 255
+		dlight.Brightness = (2 + sat) * healthperc
+		dlight.Size = 100 + sat * 50
+		dlight.Decay = 400 + sat * 200
+		dlight.DieTime = curtime + 1
 	end
 
 	r = r * healthperc
@@ -95,7 +90,7 @@ function ENT:DrawTranslucent()
 	b = b * healthperc]]
 	render.SetColorModulation(r, g, b)
 
-	self:SetModelScaleVector(Vector(0.1, 0.1, 0.9 * math.max(0.02, healthperc)) * scale)
+	self:SetModelScaleVector(Vector(0.1, 0.1, 0.9 * math.max(0.02, healthperc)) * self.ModelScale)
 	render.SetBlend(1)
 	cam.Start3D(eyepos + forwardoffset + rightoffset, eyeangles)
 	self:DrawModel()
@@ -109,7 +104,7 @@ function ENT:DrawTranslucent()
 	cam.Start3D(eyepos - forwardoffset - rightoffset, eyeangles)
 	self:DrawModel()
 	cam.End3D()
-	self:SetModelScaleVector(Vector(1, 1, 1) * scale)
+	self:SetModelScaleVector(Vector(1, 1, 1) * self.ModelScale)
 
 	render.SetBlend(1)
 	render.ModelMaterialOverride()
@@ -129,8 +124,11 @@ function ENT:DrawTranslucent()
 	cDrawWhite.b = cDrawWhite.r
 
 	render.SetMaterial(matGlow)
+	render.DrawQuadEasy(spritepos, up, whiteradius, whiteradius, cDrawWhite, self.Rotation)
+	render.DrawQuadEasy(spritepos, up * -1, whiteradius, whiteradius, cDrawWhite, self.Rotation)
 	render.DrawQuadEasy(spritepos, up, radius, radius, cDraw, self.Rotation)
 	render.DrawQuadEasy(spritepos, up * -1, radius, radius, cDraw, self.Rotation)
+	--render.DrawSprite(spritepos2, whiteradius, whiteradius * 2, cDrawWhite)
 	render.DrawSprite(spritepos2, radius, radius * 2, cDraw)
 
 	if curtime < self.NextEmit then return end
@@ -139,24 +137,24 @@ function ENT:DrawTranslucent()
 	local offset = VectorRand()
 	offset.z = 0
 	offset:Normalize()
-	offset = math.Rand(-32, 32) * scale * offset
+	offset = offset * math.Rand(-32, 32)
 	offset.z = 1
 	local pos = self:LocalToWorld(offset)
 
 	local emitter = ParticleEmitter(pos)
 	emitter:SetNearClip(24, 32)
 
-	local particle = emitter:Add(corrupt and "particle/smokesprites_0001" or "sprites/glow04_noz", pos)
+	local particle = emitter:Add("sprites/glow04_noz", pos)
 	particle:SetDieTime(math.Rand(1.5, 4))
-	particle:SetVelocity(Vector(0, 0, math.Rand(32, 64) * scale))
+	particle:SetVelocity(Vector(0, 0, math.Rand(32, 64)))
 	particle:SetStartAlpha(0)
 	particle:SetEndAlpha(255)
-	particle:SetStartSize(math.Rand(2, 4) * (corrupt and 3 or 1) * scale)
+	particle:SetStartSize(math.Rand(2, 4))
 	particle:SetEndSize(0)
 	particle:SetRoll(math.Rand(0, 360))
 	particle:SetRollDelta(math.Rand(-1, 1))
 	particle:SetColor(r * 255, g * 255, b * 255)
 	particle:SetCollide(true)
 
-	emitter:Finish() emitter = nil collectgarbage("step", 64)
+	emitter:Finish()
 end
