@@ -471,6 +471,47 @@ function GM:OpenPointsShop()
 				
 				-- Add the Guns container as a sheet to the main propertysheet
 				propertysheet:AddSheet(catname, gunscontainer, GAMEMODE.ItemCategoryIcons[catid], false, false)
+			-- Special handling for Melee category with tiers
+			elseif catid == ITEMCAT_MELEE then
+				-- Create a container panel for the Melee category
+				local meleecontainer = vgui.Create("DPanel", propertysheet)
+				meleecontainer:SetPaintBackground(false)
+				meleecontainer:SetSize(propertysheet:GetWide() - 16, propertysheet:GetTall() - 40)
+				
+				-- Create nested property sheet for tiers
+				local tierpropertysheet = vgui.Create("DPropertySheet", meleecontainer)
+				tierpropertysheet:Dock(FILL)
+				
+				-- Create tier sub-tabs for Melee
+				for tier = 1, 5 do
+					local hasitemsintier = false
+					for i, tab in ipairs(GAMEMODE.Items) do
+						if tab.Category == catid and tab.PointShop and tab.Tier == tier then
+							hasitemsintier = true
+							break
+						end
+					end
+
+					if hasitemsintier then
+						local list = vgui.Create("DPanelList", tierpropertysheet)
+						list:SetPaintBackground(false)
+						tierpropertysheet:AddSheet("Tier "..tier, list, GAMEMODE.ItemCategoryIcons[catid], false, false)
+						list:EnableVerticalScrollbar(true)
+						list:SetWide(tierpropertysheet:GetWide() - 16)
+						list:SetSpacing(2)
+						list:SetPadding(2)
+						StyleScrollbar(list)
+
+						for i, tab in ipairs(GAMEMODE.Items) do
+							if tab.Category == catid and tab.PointShop and tab.Tier == tier then
+								CreateItemPanel(tab, i, list)
+							end
+						end
+					end
+				end
+				
+				-- Add the Melee container as a sheet to the main propertysheet
+				propertysheet:AddSheet(catname, meleecontainer, GAMEMODE.ItemCategoryIcons[catid], false, false)
 			else
 				-- Normal category handling
 				local list = vgui.Create("DPanelList", propertysheet)

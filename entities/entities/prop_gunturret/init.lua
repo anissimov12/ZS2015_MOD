@@ -87,6 +87,10 @@ local function BulletCallback(attacker, tr, dmginfo)
 	local ent = tr.Entity
 	if ent:IsValid() then
 		if ent:IsPlayer() then
+			if ent:Team() == TEAM_HUMAN then
+				return {damage = false, effects = false}
+			end
+			
 			if ent:Team() == TEAM_UNDEAD and tempknockback then
 				if attacker:GetTarget() == ent then
 					attacker.LastHitSomething = CurTime()

@@ -1389,9 +1389,8 @@ function GM:InitPostEntityMap(fromze)
 		self.BossZombies = false
 	end
 
-	--[[if not game.IsDedicated() then
-		gamemode.Call("CreateSigils")
-	end]]
+	-- Spawn sigils at map initialization
+	gamemode.Call("CreateSigils")
 end
 
 local function EndRoundPlayerShouldTakeDamage(pl, attacker) return pl:Team() == TEAM_UNDEAD or not attacker:IsPlayer() end
