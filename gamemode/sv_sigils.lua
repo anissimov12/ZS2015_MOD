@@ -1,3 +1,20 @@
+function GM:PreOnSigilCorrupted(ent, dmginfo)
+end
+
+function GM:OnSigilCorrupted(ent, dmginfo)
+	net.Start("zs_sigilcorrupted")
+		net.WriteUInt(self:NumCorruptedSigils(), 8)
+	net.Broadcast()
+end
+
+function GM:PreOnSigilUncorrupted(ent, dmginfo)
+end
+
+function GM:OnSigilUncorrupted(ent, dmginfo)
+	net.Start("zs_sigiluncorrupted")
+	net.Broadcast()
+end
+
 function GM:OnSigilDestroyed(ent, dmginfo)
 	local numsigils = self:NumSigils()
 	if numsigils > 0 then

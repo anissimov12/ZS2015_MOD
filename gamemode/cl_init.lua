@@ -1871,6 +1871,54 @@ net.Receive("zs_endround", function(length)
 	gamemode.Call("EndRound", winner, nextmap)
 end)
 
+net.Receive("zs_sigilcorrupted", function(length)
+	local corrupted = net.ReadUInt(8)
+
+	LastSigilCorrupted = CurTime()
+
+	if MySelf:IsValid() then
+		local maxsigils = GAMEMODE:NumSigils()
+		local winddown = CreateSound(MySelf, "ambient/levels/labs/teleport_winddown1.wav")
+		winddown:PlayEx(1, 120)
+
+		timer.Simple(1.25, function()
+			MySelf:EmitSound("ambient/levels/labs/machine_stop1.wav", 75, 80)
+			MySelf:EmitSound("ambient/atmosphere/hole_hit5.wav", 75, 70)
+		end)
+
+		timer.Simple(1.5, function()
+			winddown:Stop()
+			MySelf:EmitSound("zombiesurvival/eyeflash.ogg", 75, 100)
+		end)
+
+		if corrupted == maxsigils then
+			GAMEMODE:CenterNotify({killicon = "default"}, {font = "ZSHUDFontSmall"}, COLOR_RED, translate.Get("sigil_corrupted_last"), {killicon = "default"})
+		else
+			GAMEMODE:CenterNotify(COLOR_RED, {font = "ZSHUDFontSmall"}, translate.Get("sigil_corrupted"))
+		end
+	end
+end)
+
+net.Receive("zs_sigiluncorrupted", function(length)
+	LastSigilUncorrupted = CurTime()
+
+	if MySelf:IsValid() then
+		MySelf:EmitSound("ambient/levels/labs/teleport_preblast_suckin1.wav", 75, 180)
+
+		timer.Simple(1.25, function()
+			MySelf:EmitSound("ambient/machines/teleport1.wav", 75, 60, 0.3)
+		end)
+		GAMEMODE:CenterNotify(COLOR_GREEN, {font = "ZSHUDFontSmall"}, translate.Get("sigil_uncorrupted"))
+	end
+end)
+
+net.Receive("zs_survivor", function(length)
+	local ent = net.ReadEntity()
+	if ent:IsValid() and ent:IsPlayer() then
+		ent:EmitSound("ambient/levels/citadel/portal_beam_shoot5.wav", 0, 180)
+	end
+end)
+
 -- Temporary fix
 function render.DrawQuadEasy(pos, dir, xsize, ysize, color, rotation)
 	xsize = xsize / 2

@@ -49,21 +49,32 @@ local cDrawWhite = Color(255, 255, 255)
 function ENT:DrawTranslucent()
 	self:RemoveAllDecals()
 
+	local scale = self.ModelScale
+
 	local curtime = CurTime()
 	local sat = math.abs(math.sin(curtime))
 	local colsat = sat * 0.125
 	local eyepos = EyePos()
 	local eyeangles = EyeAngles()
-	local scale = self.ModelScale
-	local forwardoffset = self:GetForward() * 16 * scale
-	local rightoffset = self:GetRight() * 16 * scale
+	local forwardoffset = 16 * scale * self:GetForward()
+	local rightoffset = 16 * scale * self:GetRight()
 	local healthperc = self:GetSigilHealth() / self:GetSigilMaxHealth()
-	local r, g, b = 0.15 + colsat, 0.4 + colsat, 1
 	local radius = (180 + math.cos(sat) * 40) * scale
 	local whiteradius = (122 + math.sin(sat) * 32) * scale
 	local up = self:GetUp()
 	local spritepos = self:GetPos() + up
 	local spritepos2 = self:WorldSpaceCenter()
+	local corrupt = self:GetSigilCorrupted()
+	local r, g, b
+	if corrupt then
+		r = colsat
+		g = 0.75
+		b = colsat
+	else
+		r = 0.15 + colsat
+		g = 0.4 + colsat
+		b = 1
+	end
 
 	r = r * healthperc
 	g = g * healthperc
@@ -128,24 +139,24 @@ function ENT:DrawTranslucent()
 	local offset = VectorRand()
 	offset.z = 0
 	offset:Normalize()
-	offset = offset * math.Rand(-32, 32) * scale
+	offset = math.Rand(-32, 32) * scale * offset
 	offset.z = 1
 	local pos = self:LocalToWorld(offset)
 
 	local emitter = ParticleEmitter(pos)
 	emitter:SetNearClip(24, 32)
 
-	local particle = emitter:Add("sprites/glow04_noz", pos)
+	local particle = emitter:Add(corrupt and "particle/smokesprites_0001" or "sprites/glow04_noz", pos)
 	particle:SetDieTime(math.Rand(1.5, 4))
 	particle:SetVelocity(Vector(0, 0, math.Rand(32, 64) * scale))
 	particle:SetStartAlpha(0)
 	particle:SetEndAlpha(255)
-	particle:SetStartSize(math.Rand(2, 4) * scale)
+	particle:SetStartSize(math.Rand(2, 4) * (corrupt and 3 or 1) * scale)
 	particle:SetEndSize(0)
 	particle:SetRoll(math.Rand(0, 360))
 	particle:SetRollDelta(math.Rand(-1, 1))
 	particle:SetColor(r * 255, g * 255, b * 255)
 	particle:SetCollide(true)
 
-	emitter:Finish()
+	emitter:Finish() emitter = nil collectgarbage("step", 64)
 end

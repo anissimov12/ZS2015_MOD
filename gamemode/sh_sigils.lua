@@ -3,6 +3,18 @@ ESCAPESTAGE_ESCAPE = 1
 ESCAPESTAGE_BOSS = 2
 ESCAPESTAGE_DEATH = 3
 
+function GM:IsEscapeDoorOpen()
+	if not self:GetEscapeSequence() then return false end
+
+	for _, ent in pairs(ents.FindByClass("prop_obj_exit")) do
+		if ent:IsOpened() then
+			return true
+		end
+	end
+
+	return false
+end
+
 function GM:GetSigils()
 	local sigils = {}
 
@@ -14,6 +26,32 @@ function GM:GetSigils()
 
 	return sigils
 end
+
+function GM:GetUncorruptedSigils()
+	local sigils = {}
+
+	for _, ent in pairs(ents.FindByClass("prop_obj_sigil")) do
+		if ent:GetSigilHealthBase() ~= 0 and not ent:GetSigilCorrupted() then
+			sigils[#sigils + 1] = ent
+		end
+	end
+
+	return sigils
+end
+GM.GetSigilsUncorrupted = GM.GetUncorruptedSigils
+
+function GM:GetCorruptedSigils()
+	local sigils = {}
+
+	for _, ent in pairs(ents.FindByClass("prop_obj_sigil")) do
+		if ent:GetSigilHealthBase() ~= 0 and ent:GetSigilCorrupted() then
+			sigils[#sigils + 1] = ent
+		end
+	end
+
+	return sigils
+end
+GM.GetSigilsCorrupted = GM.GetCorruptedSigils
 
 function GM:NumSigils()
 	local sigils = 0
@@ -36,6 +74,32 @@ function GM:HasSigils()
 
 	return false
 end
+
+function GM:NumUncorruptedSigils()
+	local sigils = 0
+
+	for _, ent in pairs(ents.FindByClass("prop_obj_sigil")) do
+		if ent:GetSigilHealthBase() ~= 0 and not ent:GetSigilCorrupted() then
+			sigils = sigils + 1
+		end
+	end
+
+	return sigils
+end
+GM.NumSigilsUncorrupted = GM.NumUncorruptedSigils
+
+function GM:NumCorruptedSigils()
+	local sigils = 0
+
+	for _, ent in pairs(ents.FindByClass("prop_obj_sigil")) do
+		if ent:GetSigilHealthBase() ~= 0 and ent:GetSigilCorrupted() then
+			sigils = sigils + 1
+		end
+	end
+
+	return sigils
+end
+GM.NumSigilsCorrupted = GM.NumCorruptedSigils
 
 function GM:GetUseSigils(use)
 	return GetGlobalBool("sigils", false)

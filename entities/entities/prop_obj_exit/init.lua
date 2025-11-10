@@ -21,7 +21,7 @@ function ENT:Initialize()
 
 	self:SetCreationTime(CurTime())
 
-	--self:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
+	self:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 
 	local ent = ents.Create("point_worldhint")
 	if ent:IsValid() then
@@ -63,8 +63,17 @@ function ENT:Initialize()
 end
 
 function ENT:Use(activator)
+	self:OnUse(activator)
+end
+
+function ENT:StartTouch(ent)
+	self:OnUse(ent)
+end
+
+function ENT:OnUse(activator)
 	if activator:IsPlayer() and activator:Alive() and activator:Team() == TEAM_HUMAN and self:GetOpenStartTime() == 0 and self:GetRise() == 1 then
 		self:SetOpenStartTime(CurTime())
+		self:EmitSound("plats/hall_elev_door.wav")
 	end
 end
 
@@ -76,10 +85,15 @@ function ENT:Touch(ent)
 		ent:SpectateEntity(self)
 		ent:StripWeapons()
 		ent:GodEnable()
+		ent:SetMoveType(MOVETYPE_NOCLIP)
 
 		ent:SetPos(pos)
 
-		ent:PrintMessage(3, "You've managed to survive! Waiting for other survivors...")
+		gamemode.Call("OnPlayerWin", ent)
+
+		net.Start("zs_survivor")
+			net.WriteEntity(ent)
+		net.Broadcast()
 	end
 end
 

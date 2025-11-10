@@ -109,6 +109,11 @@ LANGUAGE.x_discount_for_buying_between_waves		= "%d%% discount for buying betwee
 LANGUAGE.number_of_initial_zombies_this_game		= "Number of initial zombies this game (%d%%): %d"
 LANGUAGE.humans_closest_to_spawns_are_zombies		= "The humans closest to the zombie spawns will start as zombies."
 LANGUAGE.humans_furthest_from_sigils_are_zombies	= "The humans furthest from the Sigils will start as zombies."
+
+LANGUAGE.sigil										= "Sigil"
+LANGUAGE.sigil_corrupted							= "A Sigil has been corrupted. The Undead grow more resilient."
+LANGUAGE.sigil_corrupted_last						= "The last Sigil has been corrupted! The Undead grow very resilient!"
+LANGUAGE.sigil_uncorrupted							= "A Sigil has been uncorrupted, the Undead have weakened!"
 LANGUAGE.waiting_for_players						= "Waiting for players..."
 LANGUAGE.requires_x_people							= "Requires %d people"
 LANGUAGE.packing_others_object						= "Packing other person's object"

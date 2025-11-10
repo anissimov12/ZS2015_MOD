@@ -390,6 +390,10 @@ function GM:AddNetworkStrings()
 	util.AddNetworkString("zs_pls_kill_pl")
 	util.AddNetworkString("zs_pl_kill_self")
 	util.AddNetworkString("zs_death")
+	
+	util.AddNetworkString("zs_sigilcorrupted")
+	util.AddNetworkString("zs_sigiluncorrupted")
+	util.AddNetworkString("zs_survivor")
 end
 
 function GM:IsClassicMode()
@@ -2872,6 +2876,10 @@ end
 function GM:PlayerDeath(pl, inflictor, attacker)
 end
 
+function GM:OnPlayerWin(pl)
+	pl.Survived = true
+end
+
 function GM:PlayerDeathSound()
 	return true
 end
@@ -3740,28 +3748,35 @@ function GM:WaveStateChanged(newstate)
 
 				-- Start spawning boss zombies.
 			elseif self:GetEscapeStage() == ESCAPESTAGE_NONE then
-				-- If we're using sigils, remove them all and spawn the doors.
-				for _, sigil in pairs(ents.FindByClass("prop_obj_sigil")) do
+			-- Check if there are any uncorrupted sigils
+			local uncorruptedSigils = self:GetUncorruptedSigils()
+			
+			if #uncorruptedSigils == 0 then
+				-- No uncorrupted sigils = humans lose
+				gamemode.Call("EndRound", TEAM_UNDEAD)
+				return
+			end
+			
+			-- Spawn exits only at uncorrupted sigils
+			for _, sigil in pairs(ents.FindByClass("prop_obj_sigil")) do
+				if not sigil:GetSigilCorrupted() then
 					local ent = ents.Create("prop_obj_exit")
 					if ent:IsValid() then
 						ent:SetPos(sigil.NodePos or sigil:GetPos())
 						ent:SetAngles(sigil:GetAngles())
 						ent:Spawn()
 					end
-
-					sigil:Destroy()
 				end
+				
+				sigil:Remove()
+			end
 
-				--[[net.Start("zs_waveend")
-					net.WriteInt(self:GetWave(), 16)
-					net.WriteFloat(CurTime())
-				net.Broadcast()]]
-				PrintMessage(3, "Escape sequence started")
+			PrintMessage(3, "Escape sequence started")
 
-				-- 2 minutes to escape.
-				gamemode.Call("SetWaveActive", true)
-				gamemode.Call("SetWaveEnd", CurTime() + 120)
-				self:SetEscapeStage(ESCAPESTAGE_ESCAPE)
+			-- 2 minutes to escape.
+			gamemode.Call("SetWaveActive", true)
+			gamemode.Call("SetWaveEnd", CurTime() + 120)
+			self:SetEscapeStage(ESCAPESTAGE_ESCAPE)
 
 				local curwave = self:GetWave()
 				for _, ent in pairs(ents.FindByClass("logic_waves")) do
