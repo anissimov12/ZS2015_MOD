@@ -161,33 +161,42 @@ function GM:ZombieSpawnDistanceSort(other)
 	return self._ZombieSpawnDistance < other._ZombieSpawnDistance
 end
 
+function GM:ZombieSpawnDistanceSortSigils(other)
+	return self._ZombieSpawnDistance > other._ZombieSpawnDistance
+end
+
 function GM:SortZombieSpawnDistances(allplayers)
-	local curtime = CurTime()
-
-	local zspawns = ents.FindByClass("zombiegasses")
-	if #zspawns == 0 then
-		zspawns = team.GetValidSpawnPoint(TEAM_UNDEAD)
-	end
-
-	for _, pl in pairs(allplayers) do
-		if pl:Team() == TEAM_UNDEAD or pl:GetInfo("zs_alwaysvolunteer") == "1" then
-			pl._ZombieSpawnDistance = -1
-		elseif CLIENT or pl.LastNotAFK and CurTime() <= pl.LastNotAFK + 60 then
-			local plpos = pl:GetPos()
-			local closest = 9999999
-			for _, ent in pairs(zspawns) do
-				local dist = ent:GetPos():Distance(plpos)
-				if dist < closest then
-					closest = dist
-				end
-			end
-			pl._ZombieSpawnDistance = closest
-		else
-			pl._ZombieSpawnDistance = 9999999
+	local plpos, dist
+	
+	-- If using sigils then we sort by inverse distance from sigils instead of this.
+	local zspawns = self:GetSigils()
+	local sortbysigils = #zspawns > 0
+	if not sortbysigils then
+		zspawns = ents.FindByClass("zombiegasses")
+		if #zspawns == 0 then
+			zspawns = team.GetValidSpawnPoint(TEAM_UNDEAD)
 		end
 	end
 
-	table.sort(allplayers, self.ZombieSpawnDistanceSort)
+	local maxdist = 1280000000
+	for _, pl in pairs(allplayers) do
+		if pl:Team() == TEAM_UNDEAD then
+			pl._ZombieSpawnDistance = sortbysigils and maxdist + 2 or -2
+		elseif pl:GetInfo("zs_alwaysvolunteer") == "1" then
+			pl._ZombieSpawnDistance = sortbysigils and maxdist + 1 or -1
+		elseif CLIENT or pl.LastNotAFK and CurTime() <= pl.LastNotAFK + 60 then
+			plpos = pl:GetPos()
+			dist = maxdist
+			for __, spawn in pairs(zspawns) do
+				dist = math.min(dist, plpos:Distance(spawn:GetPos()))
+			end
+			pl._ZombieSpawnDistance = dist
+		else
+			pl._ZombieSpawnDistance = sortbysigils and 128 or maxdist -- AFK people should NOT be considered volunteers but also people ACTIVELY next to sigils should be picked AFTER AFK people.
+		end
+	end
+
+	table.sort(allplayers, sortbysigils and self.ZombieSpawnDistanceSortSigils or self.ZombieSpawnDistanceSort)
 end
 
 function GM:SetDynamicSpawning(onoff)

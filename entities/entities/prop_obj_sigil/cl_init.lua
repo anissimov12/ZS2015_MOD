@@ -9,9 +9,11 @@ local function DrawSigilHints()
 end
 
 function ENT:Initialize()
-	self:SetRenderBounds(Vector(-128, -128, -128), Vector(128, 128, 200))
+	-- Scale render bounds based on ModelScale
+	local scale = self.ModelScale
+	self:SetRenderBounds(Vector(-128, -128, -128) * scale, Vector(128, 128, 200) * scale)
 
-	self:SetModelScaleVector(Vector(1, 1, 1) * self.ModelScale)
+	self:SetModelScaleVector(Vector(1, 1, 1) * scale)
 
 	self.AmbientSound = CreateSound(self, "ambient/atmosphere/tunnel1.wav")
 
@@ -49,12 +51,13 @@ function ENT:DrawTranslucent()
 	local colsat = sat * 0.125
 	local eyepos = EyePos()
 	local eyeangles = EyeAngles()
-	local forwardoffset = self:GetForward() * 16
-	local rightoffset = self:GetRight() * 16
+	local scale = self.ModelScale
+	local forwardoffset = self:GetForward() * 16 * scale
+	local rightoffset = self:GetRight() * 16 * scale
 	local healthperc = self:GetSigilHealth() / self:GetSigilMaxHealth()
 	local r, g, b = 0.15 + colsat, 0.4 + colsat, 1
-	local radius = 180 + math.cos(sat) * 40
-	local whiteradius = 122 + math.sin(sat) * 32
+	local radius = (180 + math.cos(sat) * 40) * scale
+	local whiteradius = (122 + math.sin(sat) * 32) * scale
 	local up = self:GetUp()
 	local spritepos = self:GetPos() + up
 	local spritepos2 = self:WorldSpaceCenter()
@@ -66,7 +69,7 @@ function ENT:DrawTranslucent()
 		dlight.g = g * 255
 		dlight.b = b * 255
 		dlight.Brightness = (2 + sat) * healthperc
-		dlight.Size = 100 + sat * 50
+		dlight.Size = (100 + sat * 50) * scale
 		dlight.Decay = 400 + sat * 200
 		dlight.DieTime = curtime + 1
 	end
@@ -90,7 +93,7 @@ function ENT:DrawTranslucent()
 	b = b * healthperc]]
 	render.SetColorModulation(r, g, b)
 
-	self:SetModelScaleVector(Vector(0.1, 0.1, 0.9 * math.max(0.02, healthperc)) * self.ModelScale)
+	self:SetModelScaleVector(Vector(0.1, 0.1, 0.9 * math.max(0.02, healthperc)) * scale)
 	render.SetBlend(1)
 	cam.Start3D(eyepos + forwardoffset + rightoffset, eyeangles)
 	self:DrawModel()
@@ -104,7 +107,7 @@ function ENT:DrawTranslucent()
 	cam.Start3D(eyepos - forwardoffset - rightoffset, eyeangles)
 	self:DrawModel()
 	cam.End3D()
-	self:SetModelScaleVector(Vector(1, 1, 1) * self.ModelScale)
+	self:SetModelScaleVector(Vector(1, 1, 1) * scale)
 
 	render.SetBlend(1)
 	render.ModelMaterialOverride()
@@ -137,7 +140,7 @@ function ENT:DrawTranslucent()
 	local offset = VectorRand()
 	offset.z = 0
 	offset:Normalize()
-	offset = offset * math.Rand(-32, 32)
+	offset = offset * math.Rand(-32, 32) * scale
 	offset.z = 1
 	local pos = self:LocalToWorld(offset)
 
@@ -146,10 +149,10 @@ function ENT:DrawTranslucent()
 
 	local particle = emitter:Add("sprites/glow04_noz", pos)
 	particle:SetDieTime(math.Rand(1.5, 4))
-	particle:SetVelocity(Vector(0, 0, math.Rand(32, 64)))
+	particle:SetVelocity(Vector(0, 0, math.Rand(32, 64) * scale))
 	particle:SetStartAlpha(0)
 	particle:SetEndAlpha(255)
-	particle:SetStartSize(math.Rand(2, 4))
+	particle:SetStartSize(math.Rand(2, 4) * scale)
 	particle:SetEndSize(0)
 	particle:SetRoll(math.Rand(0, 360))
 	particle:SetRollDelta(math.Rand(-1, 1))

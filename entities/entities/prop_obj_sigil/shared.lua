@@ -4,7 +4,7 @@ ENT.MaxHealth = 1000
 ENT.HealthRegen = 10
 ENT.RegenDelay = 10
 
-ENT.ModelScale = 1 --ENT.ModelScale = 0.5
+ENT.ModelScale = 0.5
 
 ENT.m_NoNailUnfreeze = true
 ENT.NoNails = true

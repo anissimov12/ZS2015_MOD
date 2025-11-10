@@ -645,7 +645,10 @@ function GM:HumanHUD(screenscale)
 		if self:GetWave() == 0 and not self:GetWaveActive() then
 			local txth = draw_GetFontHeight("ZSHUDFontSmall")
 			draw_SimpleTextBlurry(translate.Get("waiting_for_players").." "..util.ToMinutesSeconds(math.max(0, self:GetWaveStart() - curtime)), "ZSHUDFontSmall", w * 0.5, h * 0.25, COLOR_GRAY, TEXT_ALIGN_CENTER)
-			draw_SimpleTextBlurry(translate.Get("humans_closest_to_spawns_are_zombies"), "ZSHUDFontSmall", w * 0.5, h * 0.25 + txth, COLOR_GRAY, TEXT_ALIGN_CENTER)
+			
+			-- Show different message depending on whether sigils are active
+			local spawnmsg = self:GetUseSigils() and "humans_furthest_from_sigils_are_zombies" or "humans_closest_to_spawns_are_zombies"
+			draw_SimpleTextBlurry(translate.Get(spawnmsg), "ZSHUDFontSmall", w * 0.5, h * 0.25 + txth, COLOR_GRAY, TEXT_ALIGN_CENTER)
 
 			local desiredzombies = self:GetDesiredStartingZombies()
 
