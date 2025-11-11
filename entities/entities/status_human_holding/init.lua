@@ -198,11 +198,12 @@ function ENT:Think()
 	else
 		if not self.ObjectPosition or not owner:KeyDown(IN_SPEED) then
 			local obbcenter = object:OBBCenter()
-			local objectpos = shootpos + owner:GetAimVector() * 48
-			objectpos = objectpos - obbcenter.z * object:GetUp()
-			objectpos = objectpos - obbcenter.y * object:GetRight()
-			objectpos = objectpos - obbcenter.x * object:GetForward()
-			self.ObjectPosition = objectpos
+			-- Вычисляем позицию центра пропа в мировых координатах
+			local worldcenter = object:LocalToWorld(obbcenter)
+			-- Вычисляем целевую позицию для центра пропа
+			local targetpos = shootpos + owner:GetAimVector() * 48
+			-- Вычисляем позицию origin пропа, чтобы его центр был в targetpos
+			self.ObjectPosition = targetpos - (worldcenter - object:GetPos())
 			if not self.ObjectAngles then
 				self.ObjectAngles = object:GetAngles()
 			end
