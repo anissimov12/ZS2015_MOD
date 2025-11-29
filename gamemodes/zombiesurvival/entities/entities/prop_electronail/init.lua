@@ -4,9 +4,8 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 ENT.m_NextStrainSound = 0
-ENT.RepairInterval = 2 -- Интервал починки в секундах
-ENT.RepairStrength = 1.4 -- Сила починки (как у electrohammer)
-
+ENT.RepairInterval = 1.15 --Repair interval in seconds
+ENT.RepairStrength = 1.168 --Repair strength
 hook.Add("PlayerInitialSpawn", "ElectroNailPlayerInitialSpawn", function(pl)
 	local uid = pl:UniqueID()
 
@@ -60,10 +59,18 @@ function ENT:AttachTo(baseent, attachent, physbone, physbone2)
 		baseent:SetBarricadeRepairs(baseent:GetMaxBarricadeRepairs())
 	end
 
-	-- Синхронизация таймера починки с другими электро-гвоздями на баррикаде
 	if baseent:IsValid() and not baseent:IsWorld() then
 		if not baseent.m_ElectroNailNextRepair then
-			baseent.m_ElectroNailNextRepair = CurTime() + self.RepairInterval
+			local electronails = 0
+			if baseent.Nails then
+				for _, nail in pairs(baseent.Nails) do
+					if nail:IsValid() and nail:GetClass() == "prop_electronail" then
+						electronails = electronails + 1
+					end
+				end
+			end
+			local interval = self.RepairInterval + 0.75 * math.max(electronails - 1, 0)
+			baseent.m_ElectroNailNextRepair = CurTime() + interval
 		end
 	end
 end
@@ -111,7 +118,6 @@ function ENT:AutoRepair()
 		return
 	end
 
-	-- Подсчитываем количество электро-гвоздей на этой баррикаде
 	local electronails = 0
 	if baseent.Nails then
 		for _, nail in pairs(baseent.Nails) do
@@ -123,7 +129,6 @@ function ENT:AutoRepair()
 
 	if electronails <= 0 then return end
 
-	-- Каждый гвоздь лечит свою часть
 	local healstrength = (GAMEMODE.NailHealthPerRepair or 10) * self.RepairStrength
 	local oldhealth = baseent:GetBarricadeHealth()
 	
@@ -150,17 +155,23 @@ function ENT:Think()
 		return true
 	end
 
-	-- Используем общий таймер на баррикаде для синхронизации
 	if not baseent.m_ElectroNailNextRepair then
-		baseent.m_ElectroNailNextRepair = CurTime() + self.RepairInterval
+		local electronails = 0
+		if baseent.Nails then
+			for _, nail in pairs(baseent.Nails) do
+				if nail:IsValid() and nail:GetClass() == "prop_electronail" then
+					electronails = electronails + 1
+				end
+			end
+		end
+		local interval = self.RepairInterval + 0.865 * math.max(electronails - 1, 0)
+		baseent.m_ElectroNailNextRepair = CurTime() + interval
 	end
 
 	if CurTime() >= baseent.m_ElectroNailNextRepair then
-		-- Проверяем, что это первый гвоздь, который обрабатывает починку (чтобы избежать множественных вызовов)
 		if not baseent.m_ElectroNailRepairing then
 			baseent.m_ElectroNailRepairing = true
 			
-			-- Все гвозди лечат одновременно
 			if baseent.Nails then
 				for _, nail in pairs(baseent.Nails) do
 					if nail:IsValid() and nail:GetClass() == "prop_electronail" then
@@ -169,8 +180,16 @@ function ENT:Think()
 				end
 			end
 			
-			-- Обновляем общий таймер
-			baseent.m_ElectroNailNextRepair = CurTime() + self.RepairInterval
+			local electronails = 0
+			if baseent.Nails then
+				for _, nail in pairs(baseent.Nails) do
+					if nail:IsValid() and nail:GetClass() == "prop_electronail" then
+						electronails = electronails + 1
+					end
+				end
+			end
+			local interval = self.RepairInterval + 0.865 * math.max(electronails - 1, 0)
+			baseent.m_ElectroNailNextRepair = CurTime() + interval
 			baseent.m_ElectroNailRepairing = false
 		end
 	end
