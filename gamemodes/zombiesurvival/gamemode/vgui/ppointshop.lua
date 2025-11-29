@@ -1,4 +1,3 @@
--- Кастомный лейбл с зачёркиванием
 local PANEL = {}
 
 function PANEL:Init()
@@ -10,10 +9,8 @@ function PANEL:Paint(w, h)
 		surface.SetFont(self.m_Font)
 		local tw, th = surface.GetTextSize(self.m_Text)
 		
-		-- Рисуем текст
 		draw.SimpleText(self.m_Text, self.m_Font, 0, 0, self.m_Color)
 		
-		-- Рисуем линию через текст (зачёркивание)
 		surface.SetDrawColor(self.m_Color)
 		surface.DrawLine(0, th / 2, tw, th / 2)
 	end
@@ -124,7 +121,6 @@ local function ItemPanelThink(self)
             self.m_LastPriceShown = effectivecost
 
             if isdiscount then
-                -- Показываем зачёркнутую старую цену (только цифру) и новую цену со скидкой
                 self.m_OldPriceLabel:SetTextEx(tostring(basecost), "ZSHUDFontTiny", Color(120, 120, 120))
                 self.m_OldPriceLabel:SetVisible(true)
 
@@ -132,13 +128,11 @@ local function ItemPanelThink(self)
                 self.m_PriceLabel:SetVisible(true)
                 self.m_PriceLabel:SizeToContents()
                 
-                -- Показываем "Points" после цен
                 if not self.m_PointsLabel then
                     self.m_PointsLabel = EasyLabel(self, " Points", "ZSHUDFontTiny", COLOR_WHITE)
                 end
                 self.m_PointsLabel:SetVisible(true)
             else
-                -- Скрываем старую цену, показываем только обычную
                 self.m_OldPriceLabel:SetVisible(false)
                 self.m_PriceLabel:SetText(tostring(basecost).." Points")
                 self.m_PriceLabel:SetVisible(true)
@@ -152,11 +146,9 @@ local function ItemPanelThink(self)
             self:InvalidateLayout(true)
         end
 
-        -- Динамическая подсветка цен в зависимости от наличия очков
         local canafford = MySelf:GetPoints() >= effectivecost and not (itemtab.NoClassicMode and GAMEMODE:IsClassicMode())
         
         if isdiscount then
-            -- Со скидкой: зелёная цена если хватает, красная если нет
             if canafford then
                 self.m_PriceLabel:SetTextColor(Color(50, 255, 50))
                 if self.m_PointsLabel then
@@ -169,7 +161,6 @@ local function ItemPanelThink(self)
                 end
             end
         else
-            -- Без скидки: белая цена если хватает, красная если нет
             if canafford then
                 self.m_PriceLabel:SetTextColor(COLOR_WHITE)
             else
@@ -313,7 +304,6 @@ function GM:OpenPointsShop()
 		itempan.Think = ItemPanelThink
 		list:AddItem(itempan)
 
-		-- model frame (слева)
 		local mdlframe = vgui.Create("DPanel", itempan)
 		mdlframe:SetSize(32, 32)
 		mdlframe:SetPos(4, 4)
@@ -338,7 +328,6 @@ function GM:OpenPointsShop()
 		local namelab = EasyLabel(itempan, name, "ZSHUDFontSmall", COLOR_WHITE)
 		itempan.m_NameLabel = namelab
 
-		-- Создаём два лейбла: старая цена (зачёркнутая) и новая цена
 		local oldpricelab = vgui.Create("StrikethroughLabel", itempan)
 		oldpricelab:SetTextEx(tostring(tab.Worth).." Points", "ZSHUDFontTiny", Color(120, 120, 120))
 		oldpricelab:SetVisible(false)
@@ -382,7 +371,6 @@ function GM:OpenPointsShop()
 
 			local pw, ph = self:GetWide(), self:GetTall()
 			
-			-- Проверяем, виден ли скроллбар
 			local scrollbaroffset = 0
 			if list.VBar and list.VBar:IsVisible() then
 				scrollbaroffset = 15
@@ -392,12 +380,10 @@ function GM:OpenPointsShop()
 
 			namelab:SetPos(42, math.floor(ph * 0.5 - namelab:GetTall() * 0.5))
 
-			-- Позиционируем цены: если скидка, то зачёркнутая справа, новая слева от неё
 			pricelab:SizeToContents()
 			oldpricelab:SizeToContents()
 
 			if oldpricelab:IsVisible() then
-				-- Скидка активна: зачёркнутая цена справа, новая цена слева от неё
 				local pointslab = itempan.m_PointsLabel
 				if pointslab then
 					pointslab:SizeToContents()
@@ -406,7 +392,6 @@ function GM:OpenPointsShop()
 					pricelab:SetPos(oldpricelab:GetX() - 4 - pricelab:GetWide(), 4)
 				end
 			else
-				-- Обычная цена справа
 				pricelab:SetPos(pw - 8 - scrollbaroffset - pricelab:GetWide(), 4)
 			end
 
@@ -430,18 +415,14 @@ function GM:OpenPointsShop()
 		end
 
 		if hasitems then
-			-- Special handling for Guns category with tiers
 			if catid == ITEMCAT_GUNS then
-				-- Create a container panel for the Guns category
 				local gunscontainer = vgui.Create("DPanel", propertysheet)
 				gunscontainer:SetPaintBackground(false)
 				gunscontainer:SetSize(propertysheet:GetWide() - 16, propertysheet:GetTall() - 40)
 				
-				-- Create nested property sheet for tiers
 				local tierpropertysheet = vgui.Create("DPropertySheet", gunscontainer)
 				tierpropertysheet:Dock(FILL)
-				
-				-- Create tier sub-tabs for Guns
+
 				for tier = 1, 6 do
 					local hasitemsintier = false
 					for i, tab in ipairs(GAMEMODE.Items) do
@@ -469,51 +450,8 @@ function GM:OpenPointsShop()
 					end
 				end
 				
-				-- Add the Guns container as a sheet to the main propertysheet
 				propertysheet:AddSheet(catname, gunscontainer, GAMEMODE.ItemCategoryIcons[catid], false, false)
-			-- Special handling for Melee category with tiers
-			elseif catid == ITEMCAT_MELEE then
-				-- Create a container panel for the Melee category
-				local meleecontainer = vgui.Create("DPanel", propertysheet)
-				meleecontainer:SetPaintBackground(false)
-				meleecontainer:SetSize(propertysheet:GetWide() - 16, propertysheet:GetTall() - 40)
-				
-				-- Create nested property sheet for tiers
-				local tierpropertysheet = vgui.Create("DPropertySheet", meleecontainer)
-				tierpropertysheet:Dock(FILL)
-				
-				-- Create tier sub-tabs for Melee
-				for tier = 1, 5 do
-					local hasitemsintier = false
-					for i, tab in ipairs(GAMEMODE.Items) do
-						if tab.Category == catid and tab.PointShop and tab.Tier == tier then
-							hasitemsintier = true
-							break
-						end
-					end
-
-					if hasitemsintier then
-						local list = vgui.Create("DPanelList", tierpropertysheet)
-						list:SetPaintBackground(false)
-						tierpropertysheet:AddSheet("Tier "..tier, list, GAMEMODE.ItemCategoryIcons[catid], false, false)
-						list:EnableVerticalScrollbar(true)
-						list:SetWide(tierpropertysheet:GetWide() - 16)
-						list:SetSpacing(2)
-						list:SetPadding(2)
-						StyleScrollbar(list)
-
-						for i, tab in ipairs(GAMEMODE.Items) do
-							if tab.Category == catid and tab.PointShop and tab.Tier == tier then
-								CreateItemPanel(tab, i, list)
-							end
-						end
-					end
-				end
-				
-				-- Add the Melee container as a sheet to the main propertysheet
-				propertysheet:AddSheet(catname, meleecontainer, GAMEMODE.ItemCategoryIcons[catid], false, false)
 			else
-				-- Normal category handling
 				local list = vgui.Create("DPanelList", propertysheet)
 				list:SetPaintBackground(false)
 				propertysheet:AddSheet(catname, list, GAMEMODE.ItemCategoryIcons[catid], false, false)
