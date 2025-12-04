@@ -428,7 +428,6 @@ end
 function meta:BarricadeGhostingThink()
 	if self:KeyDown(IN_ZOOM) or self:ActiveBarricadeGhosting() then 
 		if self.FirstGhostThink then 
-			self:SetLocalVelocity( Vector( 0, 0, 0 ) ) 
 			self.FirstGhostThink = false 
 		end
 		return 
