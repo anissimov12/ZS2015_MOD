@@ -230,8 +230,8 @@ GM:AddPointShopItem("assaultrifleammo", "assault rifle ammo box", nil, ITEMCAT_A
 GM:AddPointShopItem("rifleammo", "rifle ammo box", nil, ITEMCAT_AMMO, 7, nil, function(pl) pl:GiveAmmo(GAMEMODE.AmmoCache["357"] or 6, "357", true) end, "models/Items/BoxSniperRounds.mdl")
 GM:AddPointShopItem("crossbowammo", "crossbow bolt", nil, ITEMCAT_AMMO, 5, nil, function(pl) pl:GiveAmmo(1, "XBowBolt", true) end, "models/Items/CrossbowRounds.mdl")
 GM:AddPointShopItem("pulseammo", "pulse ammo box", nil, ITEMCAT_AMMO, 7, nil, function(pl) pl:GiveAmmo(GAMEMODE.AmmoCache["pulse"] or 30, "pulse", true) end, "models/Items/combine_rifle_ammo01.mdl")
-GM:AddPointShopItem("nail", "Nail", "It's just nail.", ITEMCAT_AMMO, 2, nil, function(pl) pl:GiveAmmo(3, "GaussEnergy", true) end, "models/crossbow_bolt.mdl").NoClassicMode = true
-GM:AddPointShopItem("25mkit", "25 Medical Kit power", nil, ITEMCAT_AMMO, 5, nil, function(pl) pl:GiveAmmo(50, "Battery", true) end, "models/healthvial.mdl").NoClassicMode = true
+GM:AddPointShopItem("nail", "nail", nil, ITEMCAT_AMMO, 2, nil, function(pl) pl:GiveAmmo(1, "GaussEnergy", true) end, "models/crossbow_bolt.mdl").NoClassicMode = true
+GM:AddPointShopItem("25mkit", "25 medical kit", nil, ITEMCAT_AMMO, 5, nil, function(pl) pl:GiveAmmo(25, "Battery", true) end, "models/healthvial.mdl").NoClassicMode = true
 
 GM:AddPointShopItem("axe", "Axe", nil, ITEMCAT_MELEE, 20, "weapon_zs_axe")
 GM:AddPointShopItem("crowbar", "Crowbar", nil, ITEMCAT_MELEE, 20, "weapon_zs_crowbar")
