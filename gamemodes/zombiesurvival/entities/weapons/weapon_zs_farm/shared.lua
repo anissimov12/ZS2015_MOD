@@ -5,7 +5,7 @@ SWEP.AmmoIfHas = true
 
 SWEP.Primary.ClipSize = 1
 SWEP.Primary.DefaultClip = 1
-SWEP.Primary.Ammo = "airboatgun"
+SWEP.Primary.Ammo = "alyxgun"
 SWEP.Primary.Delay = 1
 SWEP.Primary.Automatic = true
 

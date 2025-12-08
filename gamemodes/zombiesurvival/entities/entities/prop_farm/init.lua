@@ -90,7 +90,7 @@ end
 
 function ENT:OnPackedUp(pl)
 	pl:GiveEmptyWeapon("weapon_zs_farm")
-	pl:GiveAmmo(1, "airboatgun")
+	pl:GiveAmmo(1, "alyxgun")
 
 	pl:PushPackedItem(self:GetClass(), self:GetObjectHealth())
 

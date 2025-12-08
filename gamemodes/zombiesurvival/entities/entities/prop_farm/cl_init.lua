@@ -17,16 +17,17 @@ function ENT:Draw()
 	local lines = {}
 
 	-- Farm name
-	table.insert(lines, {text = self.PrintName, font = "ZS3D2DFont2", color = COLOR_GRAY})
-
-	-- Points
+	local farmname = self.PrintName
 	if isowner then
+		farmname = "Farm"
 		local cur = self:GetNWInt("stpts", 0)
 		local max = self.MaxPoints or 0
-		table.insert(lines, {text = string.format("(%u/%u)", cur, max), font = "ZS3D2DFont2", color = COLOR_GRAY})
+		farmname = string.format("%s (%u/%u)", farmname, cur, max)
 	end
 
-	-- Owner's name
+	table.insert(lines, {text = farmname, font = "ZSHUDFontBig", color = COLOR_GRAY})
+
+	-- Owner name
 	local ownercolor = isowner and COLOR_BLUE or COLOR_GRAY
 	table.insert(lines, {text = "(" .. ownername .. ")", font = "ZS3D2DFont2Small", color = ownercolor})
 

@@ -68,7 +68,7 @@ end)
 -- How much ammo is considered one 'clip' of ammo? For use with setting up weapon defaults. Works directly with zs_survivalclips
 GM.AmmoCache = {}
 GM.AmmoCache["ar2"] = 30 -- Assault rifles.
-GM.AmmoCache["alyxgun"] = 24 -- Not used.
+GM.AmmoCache["alyxgun"] = 24 -- Standart farm.
 GM.AmmoCache["pistol"] = 12 -- Pistols.
 GM.AmmoCache["smg1"] = 30 -- SMG's and some rifles.
 GM.AmmoCache["357"] = 6 -- Rifles, especially of the sniper variety.
@@ -170,6 +170,9 @@ GM:AddStartingItem("stone", "Stone", nil, ITEMCAT_OTHER, 5, "weapon_zs_stone")
 GM:AddStartingItem("grenade", "Grenade", nil, ITEMCAT_OTHER, 30, "weapon_zs_grenade")
 GM:AddStartingItem("detpck", "Detonation Pack", nil, ITEMCAT_OTHER, 35, "weapon_zs_detpack").Countables = "prop_detpack"
 GM:AddStartingItem("oxtank", "Oxygen Tank", "Grants signitifantly more underwater breathing time to the user.", ITEMCAT_OTHER, 15, "weapon_zs_oxygentank")
+
+-- GM:AddStartingItem("farm", "Farm 'Standard'", nil, ITEMCAT_OTHER, 0, "weapon_zs_farm")
+-- GM:AddStartingItem("elechmr", "Electro Hammer", nil, ITEMCAT_OTHER, 0, "weapon_zs_electrohammer").NoClassicMode = true
 
 GM:AddStartingItem("10hp", "Fit", "Increases survivability by increasing maximum health by a small amount.", ITEMCAT_TRAITS, 10, nil, function(pl) pl:SetMaxHealth(pl:GetMaxHealth() + 10) pl:SetHealth(pl:Health() + 10) end, "models/healthvial.mdl")
 GM:AddStartingItem("25hp", "Tough", "Increases survivability by increasing maximum health.", ITEMCAT_TRAITS, 20, nil, function(pl) pl:SetMaxHealth(pl:GetMaxHealth() + 25) pl:SetHealth(pl:Health() + 25) end, "models/items/healthkit.mdl")

@@ -10,8 +10,8 @@ ENT.AlwaysGhostable = true
 ENT.ModelBreakAnimation = true
 
 ENT.Model = "models/props/cs_office/computer_caseB.mdl"
-ENT.MaxPoints = 35
-ENT.PointPerSec = 0.28
+ENT.MaxPoints = 20
+ENT.PointPerSec = 0.19
 ENT.EqWeapon = "weapon_zs_farm"
 
 ENT.vOffset = Vector(0, 0, 24.5)
