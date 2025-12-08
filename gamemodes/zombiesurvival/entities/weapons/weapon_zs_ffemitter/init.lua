@@ -1,3 +1,5 @@
+-- TODO: Make ffemitter work
+
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 

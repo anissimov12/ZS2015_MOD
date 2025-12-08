@@ -161,7 +161,7 @@ item.Countables = "prop_manhack"
 GM:AddStartingItem("wrench", "Mechanic's Wrench", nil, ITEMCAT_TOOLS, 15, "weapon_zs_wrench").NoClassicMode = true
 GM:AddStartingItem("crphmr", "Carpenter's Hammer", nil, ITEMCAT_TOOLS, 45, "weapon_zs_hammer").NoClassicMode = true
 GM:AddStartingItem("6nails", "Box of 12 nails", "An extra box of nails for all your barricading needs.", ITEMCAT_TOOLS, 25, nil, function(pl) pl:GiveAmmo(12, "GaussEnergy", true) end, "models/Items/BoxMRounds.mdl")
-GM:AddStartingItem("junkpack", "Junk Pack", nil, ITEMCAT_TOOLS, 40, "weapon_zs_boardpack")
+GM:AddStartingItem("boardpack", "Board Pack", nil, ITEMCAT_TOOLS, 40, "weapon_zs_boardpack")
 GM:AddStartingItem("spotlamp", "Spot Lamp", nil, ITEMCAT_TOOLS, 25, "weapon_zs_spotlamp").Countables = "prop_spotlamp"
 GM:AddStartingItem("msgbeacon", "Message Beacon", nil, ITEMCAT_TOOLS, 10, "weapon_zs_messagebeacon").Countables = "prop_messagebeacon"
 --GM:AddStartingItem("ffemitter", "Force Field Emitter", nil, ITEMCAT_TOOLS, 60, "weapon_zs_ffemitter").Countables = "prop_ffemitter"
@@ -216,8 +216,7 @@ GM:AddPointShopItem("akbar", "'Akbar' Assault Rifle", nil, ITEMCAT_GUNS, 80, "we
 GM:AddPointShopItem("stalker", "'Stalker' Assault Rifle", nil, ITEMCAT_GUNS, 125, "weapon_zs_m4", nil, nil, 4)
 GM:AddPointShopItem("inferno", "'Inferno' Assault Rifle", nil, ITEMCAT_GUNS, 125, "weapon_zs_inferno", nil, nil, 4)
 GM:AddPointShopItem("annabelle", "'Annabelle' Rifle", nil, ITEMCAT_GUNS, 100, "weapon_zs_annabelle", nil, nil, 4)
-
-GM:AddPointShopItem("crossbow", "'Impaler' Crossbow", nil, ITEMCAT_GUNS, 175, "weapon_zs_crossbow", nil, nil, 5)
+GM:AddPointShopItem("crossbow", "'Impaler' Crossbow", nil, ITEMCAT_GUNS, 175, "weapon_zs_crossbow", nil, nil, 4)
 
 GM:AddPointShopItem("sweeper", "'Sweeper' Shotgun", nil, ITEMCAT_GUNS, 200, "weapon_zs_sweepershotgun", nil, nil, 5)
 GM:AddPointShopItem("boomstick", "Boom Stick", nil, ITEMCAT_GUNS, 200, "weapon_zs_boomstick", nil, nil, 5)
@@ -231,26 +230,22 @@ GM:AddPointShopItem("assaultrifleammo", "assault rifle ammo box", nil, ITEMCAT_A
 GM:AddPointShopItem("rifleammo", "rifle ammo box", nil, ITEMCAT_AMMO, 7, nil, function(pl) pl:GiveAmmo(GAMEMODE.AmmoCache["357"] or 6, "357", true) end, "models/Items/BoxSniperRounds.mdl")
 GM:AddPointShopItem("crossbowammo", "crossbow bolt", nil, ITEMCAT_AMMO, 5, nil, function(pl) pl:GiveAmmo(1, "XBowBolt", true) end, "models/Items/CrossbowRounds.mdl")
 GM:AddPointShopItem("pulseammo", "pulse ammo box", nil, ITEMCAT_AMMO, 7, nil, function(pl) pl:GiveAmmo(GAMEMODE.AmmoCache["pulse"] or 30, "pulse", true) end, "models/Items/combine_rifle_ammo01.mdl")
-GM:AddPointShopItem("nail", "Nails", "It's just 5 nails.", ITEMCAT_AMMO, 12, nil, function(pl) pl:GiveAmmo(3, "GaussEnergy", true) end, "models/crossbow_bolt.mdl").NoClassicMode = true
-GM:AddPointShopItem("50mkit", "50 Medical Kit power", "50 extra power for the Medical Kit.", IITEMCAT_AMMO, 25, nil, function(pl) pl:GiveAmmo(50, "Battery", true) end, "models/healthvial.mdl")
+GM:AddPointShopItem("nail", "Nail", "It's just nail.", ITEMCAT_AMMO, 2, nil, function(pl) pl:GiveAmmo(3, "GaussEnergy", true) end, "models/crossbow_bolt.mdl").NoClassicMode = true
+GM:AddPointShopItem("25mkit", "25 Medical Kit power", nil, ITEMCAT_AMMO, 5, nil, function(pl) pl:GiveAmmo(50, "Battery", true) end, "models/healthvial.mdl").NoClassicMode = true
 
-GM:AddPointShopItem("zpaxe", "Axe", nil, ITEMCAT_MELEE, 20, "weapon_zs_axe")
-GM:AddPointShopItem("crwbar", "Crowbar", nil, ITEMCAT_MELEE, 20, "weapon_zs_crowbar")
-GM:AddPointShopItem("stnbtn", "Stun Baton", nil, ITEMCAT_MELEE, 25, "weapon_zs_stunbaton")
-GM:AddPointShopItem("csknf", "Knife", nil, ITEMCAT_MELEE, 5, "weapon_zs_swissarmyknife")
-GM:AddPointShopItem("zpplnk", "Plank", nil, ITEMCAT_MELEE, 5, "weapon_zs_plank")
-GM:AddPointShopItem("sledgehammer", "Sledge Hammer", nil, ITEMCAT_MELEE, 25, "weapon_zs_sledgehammer")
-GM:AddPointShopItem("zpfryp", "Frying Pan", nil, ITEMCAT_MELEE, 15, "weapon_zs_fryingpan")
-GM:AddPointShopItem("zpcpot", "Cooking Pot", nil, ITEMCAT_MELEE, 15, "weapon_zs_pot")
-GM:AddPointShopItem("pipe", "Lead Pipe", nil, ITEMCAT_MELEE, 25, "weapon_zs_pipe")
-GM:AddPointShopItem("hook", "Meat Hook", nil, ITEMCAT_MELEE, 25, "weapon_zs_hook")
+GM:AddPointShopItem("axe", "Axe", nil, ITEMCAT_MELEE, 20, "weapon_zs_axe")
+GM:AddPointShopItem("crowbar", "Crowbar", nil, ITEMCAT_MELEE, 20, "weapon_zs_crowbar")
+GM:AddPointShopItem("stunbaton", "Stun Baton", nil, ITEMCAT_MELEE, 25, "weapon_zs_stunbaton")
+GM:AddPointShopItem("knife", "Knife", nil, ITEMCAT_MELEE, 5, "weapon_zs_swissarmyknife")
 GM:AddPointShopItem("shovel", "Shovel", nil, ITEMCAT_MELEE, 30, "weapon_zs_shovel")
+GM:AddPointShopItem("sledgehammer", "Sledge Hammer", nil, ITEMCAT_MELEE, 30, "weapon_zs_sledgehammer")
 
 GM:AddPointShopItem("medkit", "Medical Kit", nil, ITEMCAT_TOOLS, 45, "weapon_zs_medicalkit")
 GM:AddPointShopItem("medicgun", "Medic Gun", nil, ITEMCAT_TOOLS, 35, "weapon_zs_medicgun")
 GM:AddPointShopItem("crphmr", "Carpenter's Hammer", nil, ITEMCAT_TOOLS, 50, "weapon_zs_hammer").NoClassicMode = true
+GM:AddPointShopItem("6nails", "Box of 12 nails", "An extra box of nails for all your barricading needs.", ITEMCAT_TOOLS, 24, nil, function(pl) pl:GiveAmmo(12, "GaussEnergy", true) end, "models/Items/BoxMRounds.mdl")
+GM:AddPointShopItem("150mkit", "150 Medical Kit power", nil, ITEMCAT_TOOLS, 30, nil, function(pl) pl:GiveAmmo(150, "Battery", true) end, "models/healthvial.mdl")
 GM:AddPointShopItem("wrench", "Mechanic's Wrench", nil, ITEMCAT_TOOLS, 25, "weapon_zs_wrench").NoClassicMode = true
-GM:AddPointShopItem("electrohammer", "Electrohammer", nil, ITEMCAT_TOOLS, 100, "weapon_zs_electrohammer")
 GM:AddPointShopItem("arsenalcrate", "Arsenal Crate", nil, ITEMCAT_TOOLS, 50, "weapon_zs_arsenalcrate")
 GM:AddPointShopItem("resupplybox", "Resupply Box", nil, ITEMCAT_TOOLS, 200, "weapon_zs_resupplybox")
 local item = GM:AddPointShopItem("infturret", "Infrared Gun Turret", nil, ITEMCAT_TOOLS, 50, nil, function(pl)
@@ -260,10 +255,8 @@ local item = GM:AddPointShopItem("infturret", "Infrared Gun Turret", nil, ITEMCA
 end)
 item.NoClassicMode = true
 GM:AddPointShopItem("manhack", "Manhack", nil, ITEMCAT_TOOLS, 45, "weapon_zs_manhack")
-local item_spotlam = GM:AddPointShopItem("spotlam", "Spot Lam", nil, ITEMCAT_TOOLS, 40, "weapon_zs_spotlamp")
-item_spotlam.Countables = "prop_spotlamp"
 GM:AddPointShopItem("barricadekit", "'Aegis' Barricade Kit", nil, ITEMCAT_TOOLS, 125, "weapon_zs_barricadekit")
-GM:AddPointShopItem("junkpack", "Junk pack", nil, ITEMCAT_TOOLS, 25, "weapon_zs_boardpack")
+GM:AddPointShopItem("boardpack", "Board Pack", nil, ITEMCAT_TOOLS, 25, "weapon_zs_boardpack")
 
 GM:AddPointShopItem("grenade", "Grenade", nil, ITEMCAT_OTHER, 60, "weapon_zs_grenade")
 GM:AddPointShopItem("detpck", "Detonation Pack", nil, ITEMCAT_OTHER, 70, "weapon_zs_detpack")
