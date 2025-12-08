@@ -9,6 +9,8 @@ ENT.CanPackUp = true
 ENT.IsBarricadeObject = true
 ENT.AlwaysGhostable = true
 
+ENT.ResupplyDelay = 60
+
 function ENT:SetObjectHealth(health)
 	self:SetDTFloat(0, health)
 	if health <= 0 and not self.Destroyed then

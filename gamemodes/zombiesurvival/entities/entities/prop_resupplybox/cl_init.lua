@@ -39,10 +39,17 @@ function ENT:RenderInfo(pos, ang, owner)
 
 		draw.RoundedBox(32, -92, -50, 184, 100, color_black_alpha90)
 
-		draw.SimpleText(translate.Get("resupply_box"), "ZS3D2DFont2", 0, -35, NextUse <= CurTime() and COLOR_GREEN or COLOR_DARKRED, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(translate.Get("resupply_box"), "ZS3D2DFont2", 0, -66.6, NextUse <= CurTime() and COLOR_GREEN or COLOR_DARKRED, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+		local remaining = math.max(0, NextUse - CurTime())
+		local cur = math.Clamp(math.floor(self.ResupplyDelay - remaining), 0, self.ResupplyDelay)
+		local timertext = string.format("(%d/%d)", cur, self.ResupplyDelay)
+		local ready = NextUse <= CurTime()
+		local timercolor = ready and COLOR_GREEN or COLOR_DARKRED
+		draw.SimpleText(timertext, "ZS3D2DFont2", 0, 5, timercolor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 		if owner:IsValid() and owner:IsPlayer() then
-			draw.SimpleText("("..owner:ClippedName()..")", "ZS3D2DFont2Small", 0, 40, owner == MySelf and COLOR_BLUE or COLOR_GRAY, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+			draw.SimpleText("("..owner:ClippedName()..")", "ZS3D2DFont2Small", 0, 90, owner == MySelf and COLOR_BLUE or COLOR_GRAY, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 		end
 
 	cam.End3D2D()
@@ -59,11 +66,11 @@ function ENT:Draw()
 	self:RenderInfo(self:LocalToWorld(vOffset), ang, owner)
 	self:RenderInfo(self:LocalToWorld(vOffset2), self:LocalToWorldAngles(aOffset2), owner)
 
-	cam.Start3D2D(self:LocalToWorld(vOffsetEE), ang, 0.01)
+--	cam.Start3D2D(self:LocalToWorld(vOffsetEE), ang, 0.01)
 
-		draw.SimpleText("ur a faget", "ZS3D2DFont2", 0, 0, color_white, TEXT_ALIGN_CENTER)
+--		draw.SimpleText("ur a faget", "ZS3D2DFont2", 0, 0, color_white, TEXT_ALIGN_CENTER) -- (I know)
 
-	cam.End3D2D()
+--	cam.End3D2D()
 end
 
 net.Receive("zs_nextresupplyuse", function(length)

@@ -136,7 +136,7 @@ function ENT:Use(activator, caller)
 		end
 	end
 
-	NextUse[myuid] = CurTime() + 120
+	NextUse[myuid] = CurTime() + self.ResupplyDelay
 
 	net.Start("zs_nextresupplyuse")
 		net.WriteFloat(NextUse[myuid])
