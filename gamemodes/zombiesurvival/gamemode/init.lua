@@ -26,6 +26,7 @@ AddCSLuaFile("sh_zombieclasses.lua")
 AddCSLuaFile("sh_animations.lua")
 AddCSLuaFile("sh_sigils.lua")
 AddCSLuaFile("sh_channel.lua")
+AddCSLuaFile("inventory/cl_init.lua")
 
 AddCSLuaFile("cl_draw.lua")
 AddCSLuaFile("cl_util.lua")
@@ -69,10 +70,12 @@ AddCSLuaFile("vgui/pendboard.lua")
 AddCSLuaFile("vgui/pworth.lua")
 AddCSLuaFile("vgui/ppointshop.lua")
 AddCSLuaFile("vgui/zshealtharea.lua")
+AddCSLuaFile("vgui/pinventory.lua")
 
 include("shared.lua")
 include("sv_options.lua")
 include("sv_crafts.lua")
+include("inventory/init.lua")
 include("obj_entity_extend_sv.lua")
 include("obj_player_extend_sv.lua")
 include("mapeditor.lua")
@@ -384,6 +387,9 @@ function GM:AddNetworkStrings()
 	util.AddNetworkString("zs_dmg")
 	util.AddNetworkString("zs_dmg_prop")
 	util.AddNetworkString("zs_legdamage")
+	util.AddNetworkString("zs_inventory_update")
+	util.AddNetworkString("zs_inventory_request")
+	util.AddNetworkString("zs_inventory_action")
 
 	util.AddNetworkString("zs_crow_kill_crow")
 	util.AddNetworkString("zs_pl_kill_pl")
@@ -3689,6 +3695,12 @@ function GM:WaveStateChanged(newstate)
 		if self:GetUseSigils() and prevwave >= self:GetNumberOfWaves() then return end
 
 		gamemode.Call("SetWave", prevwave + 1)
+		if self:GetWave() == 1 and self.Inventory_GiveEquippedForAllPlayers then
+			if self.Inventory_DebugPrint then
+				self:Inventory_DebugPrint("Wave is 1, giving equipped items to all players")
+			end
+			self:Inventory_GiveEquippedForAllPlayers()
+		end
 		gamemode.Call("SetWaveStart", CurTime())
 		if self.ZombieEscape then
 			gamemode.Call("SetWaveEnd", -1)
