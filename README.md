@@ -31,7 +31,7 @@ These elements were adapted and reimplemented for this fork.
 1. Clone this repository into your `garrysmod/addons` folder:
 ```bash
 git clone https://github.com/anissimov12/ZS2015_MOD.git
-
+```
 2. Launch Garry’s Mod
 
 3. Start the gamemode:
