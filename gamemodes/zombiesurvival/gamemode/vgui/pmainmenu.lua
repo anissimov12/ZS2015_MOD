@@ -190,6 +190,20 @@ function GM:ShowHelp()
 
 	local but = vgui.Create("DButton", menu)
 	but:SetFont("ZSHUDFontSmaller")
+	but:SetText("Shop")
+	but:SetTall(32)
+	but:DockMargin(0, 0, 0, 12)
+	but:DockPadding(0, 12, 0, 12)
+	but:Dock(TOP)
+	but.DoClick = function()
+		local gm = GAMEMODE or GM
+		if gm and gm.OpenShop then
+			gm:OpenShop()
+		end
+	end
+
+	local but = vgui.Create("DButton", menu)
+	but:SetFont("ZSHUDFontSmaller")
 	but:SetText("Close")
 	but:SetTall(32)
 	but:DockMargin(0, 24, 0, 0)

@@ -37,6 +37,32 @@ function PANEL:Init()
     self:SetSizable(false)
     self:DockPadding(8, 32, 8, 8)
 
+	self.TopBar = vgui.Create("DPanel", self)
+	self.TopBar:Dock(TOP)
+	self.TopBar:SetTall(28)
+	self.TopBar.Paint = function() end
+
+	local invbut = vgui.Create("DButton", self.TopBar)
+	invbut:SetText("Inventory")
+	invbut:SetWide(90)
+	invbut:Dock(LEFT)
+	invbut:DockMargin(0, 0, 8, 0)
+	invbut.DoClick = function() end
+
+	local shopbut = vgui.Create("DButton", self.TopBar)
+	shopbut:SetText("Shop")
+	shopbut:SetWide(90)
+	shopbut:Dock(LEFT)
+	shopbut.DoClick = function()
+		local gm = GAMEMODE or GM
+		if gm and gm.OpenShop then
+			if gm.InventoryPanel and gm.InventoryPanel:IsValid() then
+				gm.InventoryPanel:Close()
+			end
+			gm:OpenShop()
+		end
+	end
+
     self.Scroll = vgui.Create("DScrollPanel", self)
     self.Scroll:Dock(FILL)
 
@@ -159,55 +185,22 @@ function ITEM:OnMousePressed(mc)
             gm:Inventory_RequestAction("equip", tostring(self.ID))
         end)
     end
-    menu:AddOption("Delete", function()
-        local overlay = vgui.Create("DFrame")
-        if not overlay or not overlay:IsValid() then return end
-        overlay:SetTitle("")
-        overlay:ShowCloseButton(false)
-        overlay:SetDraggable(false)
-        overlay:SetSize(ScrW(), ScrH())
-        overlay:SetPos(0, 0)
-        overlay:MakePopup()
-        overlay.Paint = function(pnl, w, h)
-            surface.SetDrawColor(0, 0, 0, 180)
-            surface.DrawRect(0, 0, w, h)
-        end
-
-        local box = vgui.Create("DPanel", overlay)
-        if not box or not box:IsValid() then overlay:Remove() return end
-        box:SetSize(320, 140)
-        box:Center()
-        box.Paint = function(pnl, w, h)
-            draw.RoundedBox(6, 0, 0, w, h, Color(15, 15, 15, 240))
-            surface.SetDrawColor(80, 80, 80, 255)
-            surface.DrawOutlinedRect(0, 0, w, h)
-        end
-
-        local lbl = vgui.Create("DLabel", box)
-        lbl:SetText("Delete item: " .. (self.Name or tostring(self.ID)) .. "?")
-        lbl:SetFont("ZSHUDFontTiny")
-        lbl:SetTextColor(Color(230, 230, 230))
-        lbl:SizeToContents()
-        lbl:CenterHorizontal()
-        lbl:SetPos(lbl.x, 35)
-
-        local btnYes = vgui.Create("DButton", box)
-        btnYes:SetText("Yes")
-        btnYes:SetSize(120, 30)
-        btnYes:SetPos(40, 90)
-        btnYes.DoClick = function()
-            if IsValid(overlay) then overlay:Remove() end
-            gm:Inventory_RequestAction("delete", tostring(self.ID))
-        end
-
-        local btnNo = vgui.Create("DButton", box)
-        btnNo:SetText("No")
-        btnNo:SetSize(120, 30)
-        btnNo:SetPos(320 - 40 - 120, 90)
-        btnNo.DoClick = function()
-            if IsValid(overlay) then overlay:Remove() end
-        end
-    end)
+	if self.Category ~= "Equipped" then
+		menu:AddOption("Sell", function()
+			Derma_StringRequest("Sell", "Amount to sell:", tostring(self.Count or 1), function(text)
+				local n = tonumber(text) or 0
+				if n < 1 then return end
+				gm:Inventory_RequestAction("sell", tostring(self.ID), {count = n})
+			end)
+		end)
+	end
+	menu:AddOption("Delete", function()
+		Derma_StringRequest("Delete", "Amount to delete:", tostring(self.Count or 1), function(text)
+			local n = tonumber(text) or 0
+			if n < 1 then return end
+			gm:Inventory_RequestAction("delete", tostring(self.ID), {count = n})
+		end)
+	end)
     menu:Open()
 end
 

@@ -27,9 +27,16 @@ end
 function GM:Inventory_RequestAction(action, itemid, extra)
 	if not action or not itemid or action == "" or itemid == "" then return end
 
+	local count = 1
+	if istable(extra) and extra.count then
+		count = tonumber(extra.count) or 1
+	end
+	count = math.max(1, count)
+
 	net.Start("zs_inventory_action")
 		net.WriteString(action)
 		net.WriteString(itemid)
+		net.WriteUInt(count, 16)
 	net.SendToServer()
 end
 

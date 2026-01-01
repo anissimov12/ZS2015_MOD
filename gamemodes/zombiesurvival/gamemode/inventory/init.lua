@@ -93,6 +93,47 @@ function GM:Inventory_SavePlayer(pl)
 end
 
 function GM:Inventory_GiveItem(pl, itemid, data)
+	if not IsValid(pl) then return end
+
+	itemid = tostring(itemid or "")
+	if itemid == "" then return end
+
+	local defs = self.Inventory.ItemsData or {}
+	local def = defs[itemid]
+	if not def then return end
+
+	local count = 1
+	if istable(data) and data.count then
+		count = tonumber(data.count) or 1
+	end
+	count = math.max(1, count)
+
+	local inv = self:Inventory_GetItems(pl)
+	local found
+	for _, it in ipairs(inv) do
+		if it and tostring(it.ID or it.id) == itemid then
+			it.Count = (tonumber(it.Count) or 1) + count
+			found = true
+			break
+		end
+	end
+
+	if not found then
+		local newitem = table.Copy(def)
+		newitem.Count = count
+		newitem.Category = newitem.DefaultCategory or newitem.Category or "Items"
+		table.insert(inv, newitem)
+	end
+
+	self.Inventory.Data[pl] = inv
+
+	if self.Inventory_SavePlayer then
+		self:Inventory_SavePlayer(pl)
+	end
+
+	if self.Inventory_SendToClient then
+		self:Inventory_SendToClient(pl)
+	end
 end
 
 function GM:Inventory_RemoveItem(pl, itemid)
@@ -117,19 +158,58 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
     local id = payload and payload.id
     if not id or id == "" then return end
 
+	local count = 1
+	if payload and payload.count then
+		count = tonumber(payload.count) or 1
+	end
+	count = math.max(1, count)
+
     local inv = self.Inventory.Data[pl]
     if not inv then
         inv = self:Inventory_GetItems(pl)
     end
 
     if action == "delete" then
-        for i = #inv, 1, -1 do
-            local it = inv[i]
-            if it and tostring(it.ID or it.id) == tostring(id) then
-                -- self:Inventory_DebugPrint("Deleted item", it.Name or it.ID, "from", pl:Nick())
-                table.remove(inv, i)
-            end
-        end
+		for i = #inv, 1, -1 do
+			local it = inv[i]
+			if it and tostring(it.ID or it.id) == tostring(id) then
+				local cur = tonumber(it.Count) or 1
+				if count >= cur then
+					table.remove(inv, i)
+				else
+					it.Count = cur - count
+				end
+				break
+			end
+		end
+    elseif action == "sell" then
+		for i = #inv, 1, -1 do
+			local it = inv[i]
+			if it and tostring(it.ID or it.id) == tostring(id) then
+				if it.Category == "Equipped" then
+					break
+				end
+
+				local cur = tonumber(it.Count) or 1
+				local sellcount = math.min(cur, count)
+
+				local defs = self.Inventory.ItemsData or {}
+				local def = defs[id]
+				local price = tonumber(def and (def.Price or def.Cost) or 10) or 10
+				price = math.max(0, price)
+
+				if self.Shop_AddCoins then
+					self:Shop_AddCoins(pl, price * sellcount)
+				end
+
+				if sellcount >= cur then
+					table.remove(inv, i)
+				else
+					it.Count = cur - sellcount
+				end
+				break
+			end
+		end
     elseif action == "equip" then
         for _, it in ipairs(inv) do
             if it and tostring(it.ID or it.id) == tostring(id) then
@@ -180,8 +260,12 @@ net.Receive("zs_inventory_action", function(_, pl)
 
 	local action = net.ReadString() or ""
 	local itemid = net.ReadString() or ""
+	local count = 1
+	if net.BytesLeft() >= 2 then
+		count = net.ReadUInt(16) or 1
+	end
 
-	gm:Inventory_HandleClientRequest(pl, action, {id = itemid})
+	gm:Inventory_HandleClientRequest(pl, action, {id = itemid, count = count})
 
 	if gm.Inventory_SendToClient then
 		gm:Inventory_SendToClient(pl)
