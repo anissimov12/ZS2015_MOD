@@ -59,6 +59,12 @@ function MakepOptions()
 	list:AddItem(check)
 
 	local check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("Enable Key Help")
+	check:SetConVar("zs_keyhelp")
+	check:SizeToContents()
+	list:AddItem(check)
+
+	local check = vgui.Create("DCheckBoxLabel", Window)
 	check:SetText("Enable last human music")
 	check:SetConVar("zs_playmusic")
 	check:SizeToContents()

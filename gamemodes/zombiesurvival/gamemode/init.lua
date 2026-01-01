@@ -71,6 +71,7 @@ AddCSLuaFile("vgui/pworth.lua")
 AddCSLuaFile("vgui/ppointshop.lua")
 AddCSLuaFile("vgui/zshealtharea.lua")
 AddCSLuaFile("vgui/pinventory.lua")
+AddCSLuaFile("vgui/pkeyhelp.lua")
 
 include("shared.lua")
 include("sv_options.lua")
