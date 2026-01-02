@@ -436,10 +436,12 @@ concommand.Add("zs_inv_add", function(ply, cmd, args)
 
 	local inv = gm:Inventory_GetItems(tgt)
 	local found
+	local itemname
 	for _, it in ipairs(inv) do
 		if it.ID == id then
 			it.Count = (it.Count or 1) + count
 			found = true
+			itemname = it.Name or id
 			break
 		end
 	end
@@ -449,12 +451,19 @@ concommand.Add("zs_inv_add", function(ply, cmd, args)
 		if not def then return end
 		local newitem = table.Copy(def)
 		newitem.Count = count
+		itemname = newitem.Name or id
 		table.insert(inv, newitem)
 	end
 
 	gm.Inventory.Data[tgt] = inv
 	if gm.Inventory_SavePlayer then
 		gm:Inventory_SavePlayer(tgt)
+	end
+	if gm.Inventory_SendToClient then
+		gm:Inventory_SendToClient(tgt)
+	end
+	if gm.Notify_Send then
+		gm:Notify_Send(tgt, "Server added " .. tostring(itemname or id) .. " x" .. tostring(count) .. ".", 3)
 	end
 end)
 
@@ -472,22 +481,34 @@ concommand.Add("zs_inv_del", function(ply, cmd, args)
 	if not gm then return end
 
 	local inv = gm:Inventory_GetItems(tgt)
+	local removed
+	local itemname
 	for i = #inv, 1, -1 do
 		local it = inv[i]
 		if it.ID == id then
 			local cur = it.Count or 1
 			if cur <= count then
 				table.remove(inv, i)
+				removed = cur
 			else
 				it.Count = cur - count
+				removed = count
 			end
+			itemname = it.Name or id
 			break
 		end
 	end
+	if not removed then return end
 
 	gm.Inventory.Data[tgt] = inv
 	if gm.Inventory_SavePlayer then
 		gm:Inventory_SavePlayer(tgt)
+	end
+	if gm.Inventory_SendToClient then
+		gm:Inventory_SendToClient(tgt)
+	end
+	if gm.Notify_Send then
+		gm:Notify_Send(tgt, "Server removed " .. tostring(itemname or id) .. " x" .. tostring(removed) .. ".", 3)
 	end
 end)
 

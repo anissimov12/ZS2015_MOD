@@ -149,6 +149,8 @@ function GM:Shop_HandleBuy(pl, itemid, count)
 		self:Inventory_GiveItem(pl, itemid, {count = count})
 	end
 
+	pl:SendLua("surface.PlaySound(\"ambient/levels/labs/coinslot1.wav\")")
+
 	if self.Notify_Send then
 		local name = def.Name or itemid
 		local msg = "Bought " .. tostring(name)
