@@ -174,10 +174,19 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
 			local it = inv[i]
 			if it and tostring(it.ID or it.id) == tostring(id) then
 				local cur = tonumber(it.Count) or 1
+				local delcount = math.min(cur, count)
+				local name = it.Name or id
 				if count >= cur then
 					table.remove(inv, i)
 				else
 					it.Count = cur - count
+				end
+				if self.Notify_Send then
+					local msg = "Deleted " .. tostring(name)
+					if delcount > 1 then
+						msg = msg .. " x" .. tostring(delcount)
+					end
+					self:Notify_Send(pl, msg, 3)
 				end
 				break
 			end
@@ -192,6 +201,7 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
 
 				local cur = tonumber(it.Count) or 1
 				local sellcount = math.min(cur, count)
+				local name = it.Name or id
 
 				local defs = self.Inventory.ItemsData or {}
 				local def = defs[id]
@@ -207,6 +217,15 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
 				else
 					it.Count = cur - sellcount
 				end
+
+				if self.Notify_Send then
+					local msg = "Sold " .. tostring(name)
+					if sellcount > 1 then
+						msg = msg .. " x" .. tostring(sellcount)
+					end
+					msg = msg .. " (+" .. tostring(price * sellcount) .. ")"
+					self:Notify_Send(pl, msg, 3)
+				end
 				break
 			end
 		end
@@ -217,6 +236,9 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
                     it.DefaultCategory = it.Category or "Items"
                 end
                 it.Category = "Equipped"
+				if self.Notify_Send then
+					self:Notify_Send(pl, "Equipped " .. tostring(it.Name or id) .. ".", 3)
+				end
                 -- self:Inventory_DebugPrint("Equipped item", it.Name or it.ID, "for", pl:Nick())
             end
         end
@@ -225,6 +247,9 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
             if it and tostring(it.ID or it.id) == tostring(id) then
                 local def = it.DefaultCategory or "Items"
                 it.Category = def
+				if self.Notify_Send then
+					self:Notify_Send(pl, "Unequipped " .. tostring(it.Name or id) .. ".", 3)
+				end
                 -- self:Inventory_DebugPrint("Unequipped item", it.Name or it.ID, "for", pl:Nick())
             end
         end

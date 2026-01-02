@@ -47,6 +47,9 @@ function GM:Shop_AddCoins(pl, amount)
 	if not IsValid(pl) then return end
 	amount = tonumber(amount) or 0
 	if amount == 0 then return end
+	if amount > 0 and self.Notify_Send then
+		self:Notify_Send(pl, "+" .. tostring(amount) .. " coins", 3)
+	end
 	self:Shop_SetCoins(pl, self:Shop_GetCoins(pl) + amount)
 end
 
@@ -134,6 +137,9 @@ function GM:Shop_HandleBuy(pl, itemid, count)
 
 	local coins = self:Shop_GetCoins(pl)
 	if coins < total then
+		if self.Notify_Send then
+			self:Notify_Send(pl, "Not enough coins.", 3)
+		end
 		return
 	end
 
@@ -141,6 +147,16 @@ function GM:Shop_HandleBuy(pl, itemid, count)
 
 	if self.Inventory_GiveItem then
 		self:Inventory_GiveItem(pl, itemid, {count = count})
+	end
+
+	if self.Notify_Send then
+		local name = def.Name or itemid
+		local msg = "Bought " .. tostring(name)
+		if count > 1 then
+			msg = msg .. " x" .. tostring(count)
+		end
+		msg = msg .. " (-" .. tostring(total) .. ")"
+		self:Notify_Send(pl, msg, 3)
 	end
 end
 
