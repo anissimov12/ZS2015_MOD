@@ -31,7 +31,7 @@ end
 vgui.Register("StrikethroughLabel", PANEL, "DPanel")
 
 local function pointslabelThink(self)
-	local points = MySelf:GetPoints()
+	local points = MySelf:GetTotalPoints()
 	if self.m_LastPoints ~= points then
 		self.m_LastPoints = points
 
@@ -146,7 +146,7 @@ local function ItemPanelThink(self)
             self:InvalidateLayout(true)
         end
 
-        local canafford = MySelf:GetPoints() >= effectivecost and not (itemtab.NoClassicMode and GAMEMODE:IsClassicMode())
+        local canafford = MySelf:GetTotalPoints() >= effectivecost and not (itemtab.NoClassicMode and GAMEMODE:IsClassicMode())
         
         if isdiscount then
             if canafford then

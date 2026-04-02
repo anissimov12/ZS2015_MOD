@@ -8,6 +8,7 @@ end
 
 include("shared.lua")
 include("cl_draw.lua")
+include("pvers.lua")
 include("cl_util.lua")
 include("cl_options.lua")
 include("inventory/cl_init.lua")

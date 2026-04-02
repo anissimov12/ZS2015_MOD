@@ -13,6 +13,7 @@ LANGUAGE.banned_for_life_warning					= "Ваша жизнь забанена, в
 LANGUAGE.need_to_be_near_arsenal_crate				= "Вы должны быть рядом с Arsenal crate чтобы делать покупки!"
 LANGUAGE.cant_purchase_right_now					= "Вы, пока что, ничего не можете купить."
 LANGUAGE.dont_have_enough_points					= "У Вас недостаточно очков."
+LANGUAGE.farm_points_label							= "Ферма"
 LANGUAGE.prepare_yourself							= "Приготовьтесь..."
 LANGUAGE.purchased_x_for_y_points					= "Вами был куплен %s за %d очков!"
 LANGUAGE.give_time_before_suicide					= "Дайте время остальным, чтобы появиться в игре, перед тем, как вы убьете себя."

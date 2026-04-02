@@ -125,7 +125,18 @@ function PANEL:Text3Paint()
 				draw.SimpleText(translate.Format("brains_eaten_x", MySelf:Frags()), self.Font, 0, 0, COLOR_DARKRED)
 			end
 		else
-			draw.SimpleText(translate.Format("points_x", MySelf:GetPoints().." / "..MySelf:Frags()), self.Font, 0, 0, COLOR_DARKRED)
+			local pts   = MySelf:GetPoints()
+			local frags = MySelf:Frags()
+			local fake  = MySelf:GetNWInt("FarmPoints", 0)
+
+			if fake > 0 then
+				draw.SimpleText(
+					translate.Format("points_x", pts .. " / " .. translate.Get("farm_points_label") .. ": " .. fake .. " / " .. frags),
+					self.Font, 0, 0, COLOR_DARKRED
+				)
+			else
+				draw.SimpleText(translate.Format("points_x", pts .. " / " .. frags), self.Font, 0, 0, COLOR_DARKRED)
+			end
 		end
 	end
 

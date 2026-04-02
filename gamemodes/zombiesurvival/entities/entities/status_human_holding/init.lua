@@ -47,14 +47,13 @@ function ENT:Initialize()
 
 			self:SetObjectMass(objectphys:GetMass())
 
-			if owner.BuffMuscular or (objectphys:GetMass() <= CARRY_DRAG_MASS and (object:OBBMins():Length() + object:OBBMaxs():Length() <= CARRY_DRAG_VOLUME or object.NoVolumeCarryCheck)) then
+			if objectphys:GetMass() <= CARRY_MAXIMUM_MASS or (objectphys:GetMass() <= CARRY_DRAG_MASS and (object:OBBMins():Length() + object:OBBMaxs():Length() <= CARRY_DRAG_VOLUME or object.NoVolumeCarryCheck)) then
 				objectphys:AddGameFlag(FVPHYSICS_PLAYER_HELD)
 				object._OriginalMass = objectphys:GetMass()
 
 				objectphys:EnableGravity(false)
 				objectphys:SetMass(2)
 
-				-- Сохраняем и устанавливаем полупрозрачность для поднимаемых пропов
 				object.PreHoldAlpha = object.PreHoldAlpha or object:GetAlpha()
 				object.PreHoldRenderMode = object.PreHoldRenderMode or object:GetRenderMode()
 				object:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -64,7 +63,6 @@ function ENT:Initialize()
 			else
 				self:SetIsHeavy(true)
 				self:SetHingePos(object:NearestPoint(self:GetPullPos()))
-				-- Для таскаемых пропов не меняем прозрачность
 			end
 
 			object:CollisionRulesChanged()
@@ -108,7 +106,6 @@ function ENT:OnRemove()
 				object:CollisionRulesChanged()
 			end
 
-			-- Восстанавливаем прозрачность при отпуске
 			if object.PreHoldAlpha ~= nil then
 				object:SetAlpha(object.PreHoldAlpha)
 				object.PreHoldAlpha = nil
@@ -198,23 +195,18 @@ function ENT:Think()
 	else
 		if not self.ObjectPosition or not owner:KeyDown(IN_SPEED) then
 			local obbcenter = object:OBBCenter()
-			-- Вычисляем позицию центра пропа в мировых координатах
 			local worldcenter = object:LocalToWorld(obbcenter)
-			-- Вычисляем целевую позицию для центра пропа
 			local targetpos = shootpos + owner:GetAimVector() * 48
-			-- Вычисляем позицию origin пропа, чтобы его центр был в targetpos
 			self.ObjectPosition = targetpos - (worldcenter - object:GetPos())
 			if not self.ObjectAngles then
 				self.ObjectAngles = object:GetAngles()
 			end
 		end
 
-		-- Выравнивание углов к ближайшему углу, кратному 40 градусам при нажатии R
 		if owner:KeyPressed(IN_RELOAD) then
 			local currentAngles = self.ObjectAngles
 			local snapAngle = 45
 			
-			-- Выравниваем каждую ось к ближайшему углу, кратному 40 градусам
 			local pitch = math.Round(currentAngles.p / snapAngle) * snapAngle
 			local yaw = math.Round(currentAngles.y / snapAngle) * snapAngle
 			local roll = math.Round(currentAngles.r / snapAngle) * snapAngle

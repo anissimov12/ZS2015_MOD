@@ -74,7 +74,8 @@ function ENT:Use(activator, caller)
 	if amount <= 0 then return end
 
 	if activator.SetPoints and activator.GetPoints then
-		activator:SetPoints(activator:GetPoints() + amount)
+		activator.FarmPoints = (activator.FarmPoints or 0) + amount
+		activator:SetNWInt("FarmPoints", activator.FarmPoints)
 		if gamemode and gamemode.Call then
 			gamemode.Call("PlayerPointsAdded", activator, amount)
 		end

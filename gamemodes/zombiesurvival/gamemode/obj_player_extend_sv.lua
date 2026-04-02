@@ -29,16 +29,17 @@ function meta:FakeDeath(sequenceid, modelscale, length)
 	return ent
 end
 
+
+
 local MuscularBones = {
 	["ValveBiped.Bip01_R_Upperarm"] = Vector(1, 2, 2),
-	["ValveBiped.Bip01_R_Forearm"] = Vector(1, 2, 2),
+	["ValveBiped.Bip01_R_Forearm"]  = Vector(1, 2, 2),
 	["ValveBiped.Bip01_L_Upperarm"] = Vector(1, 2, 2),
-	["ValveBiped.Bip01_L_Forearm"] = Vector(1, 2, 2)
+	["ValveBiped.Bip01_L_Forearm"]  = Vector(1, 2, 2),
 }
 function meta:DoMuscularBones()
 	if self.BuffMuscular and self:Team() == TEAM_HUMAN then
 		self.MuscularBones = {}
-
 		for bonename, newscale in pairs(MuscularBones) do
 			local boneid = self:LookupBone(bonename)
 			if boneid and boneid > 0 then
@@ -84,6 +85,11 @@ function meta:ChangeTeam(teamid)
 	self:SetTeam(teamid)
 	if oldteam ~= teamid then
 		gamemode.Call("OnPlayerChangedTeam", self, oldteam, teamid)
+		-- Reset farm points when switching teams (e.g. turning into a zombie)
+		if self.FarmPoints and self.FarmPoints > 0 then
+			self.FarmPoints = 0
+			self:SetNWInt("FarmPoints", 0)
+		end
 	end
 	self:DoNoodleArmBones()
 	self:DoMuscularBones()
@@ -577,7 +583,16 @@ function meta:AddPoints(points)
 end
 
 function meta:TakePoints(points)
-	self:SetPoints(self:GetPoints() - points)
+	-- Spend FarmPoints first, then real points
+	if self.FarmPoints and self.FarmPoints > 0 then
+		local fromFarm = math.min(self.FarmPoints, points)
+		self.FarmPoints = self.FarmPoints - fromFarm
+		self:SetNWInt("FarmPoints", self.FarmPoints)
+		points = points - fromFarm
+	end
+	if points > 0 then
+		self:SetPoints(self:GetPoints() - points)
+	end
 end
 
 function meta:UpdateAllZombieClasses()

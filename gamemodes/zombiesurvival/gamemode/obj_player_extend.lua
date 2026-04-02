@@ -154,6 +154,10 @@ function meta:GetPoints()
 	return self:GetDTInt(1)
 end
 
+function meta:GetTotalPoints()
+	return self:GetDTInt(1) + self:GetNWInt("FarmPoints", 0)
+end
+
 function meta:SetPalsy(onoff, nosend)
 	self.m_Palsy = onoff
 	if SERVER and not nosend then
@@ -353,12 +357,26 @@ function meta:ResetSpeed(noset, health)
 		speed = speed + self.HumanSpeedAdder
 	end
 
-	--[[if self:IsHolding() then
+	if self:IsHolding() then
 		local status = self.status_human_holding
-		if status and status:IsValid() and status:GetObject():IsValid() and status:GetObject():GetPhysicsObject():IsValid() then
-			speed = math.min(speed, math.max(CARRY_SPEEDLOSS_MINSPEED, speed - status:GetObject():GetPhysicsObject():GetMass() * CARRY_SPEEDLOSS_PERKG))
+		if status and status:IsValid() then
+			local obj = status:GetObject()
+			if obj:IsValid() then
+				local phys = obj:GetPhysicsObject()
+				if phys:IsValid() then
+					local mass = phys:GetMass()
+					if status:GetIsHeavy() then
+						-- drag: stronger slowdown, scales with mass above CARRY_MAXIMUM_MASS
+						local overMass = math.max(0, mass - CARRY_MAXIMUM_MASS)
+						speed = math.min(speed, math.max(CARRY_SPEEDLOSS_MINSPEED, speed - mass * CARRY_SPEEDLOSS_PERKG - overMass * 0.5))
+					else
+						-- carry: original formula
+						speed = math.min(speed, math.max(CARRY_SPEEDLOSS_MINSPEED, speed - mass * CARRY_SPEEDLOSS_PERKG))
+					end
+				end
+			end
 		end
-	end]]
+	end
 
 	if 32 < speed and not GAMEMODE.ZombieEscape then
 		if not health then health = self:Health() end
