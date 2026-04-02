@@ -230,4 +230,57 @@ function SKIN:PaintButton(panel, w, h)
 	surface.DrawTexturedRectRotated(math.ceil(edgesize * 0.5), math.ceil(h * 0.5), edgesize, h, 180)
 end
 
+function SKIN:PaintVScrollBar(panel, w, h)
+	draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 80))
+end
+
+function SKIN:PaintScrollBarGrip(panel, w, h)
+	draw.RoundedBox(2, 2, 0, w - 4, h, Color(60, 60, 60, 80))
+end
+
+function SKIN:PaintButtonDown(panel, w, h)
+	draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 80))
+end
+
+function SKIN:PaintButtonUp(panel, w, h)
+	draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 80))
+end
+
+function SKIN:PaintTextEntry(panel, w, h)
+	if panel.GetPlaceholderText and panel.GetPlaceholderColor and panel:GetPlaceholderText() and panel:GetPlaceholderText():Trim() ~= "" and panel:GetPlaceholderColor() and (not panel:GetText() or panel:GetText() == "") then
+		local oldText = panel:GetText()
+		
+		local str = panel:GetPlaceholderText()
+		if str:StartWith("#") then str = str:sub(2) end
+		str = language.GetPhrase(str)
+		
+		draw.SimpleText(str, panel:GetFont(), panel.m_iTextOffsetX or 0, h / 2, panel:GetPlaceholderColor(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		
+		return
+	end
+	
+	panel:DrawTextEntryText(panel:GetTextColor(), panel:GetHighlightColor(), panel:GetCursorColor())
+end
+
+function SKIN:SchemeTextEntry(panel)
+	panel:SetTextColor(Color(220, 220, 220, 255))
+	panel:SetHighlightColor(Color(30, 255, 0, 100))
+	panel:SetCursorColor(Color(220, 220, 220, 255))
+end
+
+function SKIN:LayoutTextEntry(panel, w, h)
+	-- Background
+	panel.Paint = function(pnl, w, h)
+		draw.RoundedBox(4, 0, 0, w, h, Color(10, 10, 10, 200))
+		surface.SetDrawColor(80, 80, 80, 255)
+		surface.DrawOutlinedRect(0, 0, w, h)
+		
+		self:PaintTextEntry(pnl, w, h)
+	end
+end
+
+function SKIN:LayoutVScrollBar(panel, w, h)
+	panel:SetWide(12)
+end
+
 derma.DefineSkin("zombiesurvival", "The default Derma skin for Zombie Survival", SKIN, "Default")

@@ -9,8 +9,8 @@ GM.Inventory.Items = GM.Inventory.Items or {}
 function GM:Inventory_SetItems(items)
 	self.Inventory.Items = items or {}
 
-	if self.InventoryPanel and self.InventoryPanel.UpdateItems then
-		self.InventoryPanel:UpdateItems(self.Inventory.Items)
+	if self.MarketPanel and self.MarketPanel.UpdateInventory then
+		self.MarketPanel:UpdateInventory(self.Inventory.Items)
 	end
 end
 
@@ -48,28 +48,30 @@ function GM:OpenInventory()
 	net.Start("zs_inventory_request")
 		net.SendToServer()
 
-	if self.InventoryPanel and self.InventoryPanel:IsValid() then
-		if self.InventoryPanel:IsVisible() then
-			self.InventoryPanel:Close()
+	if self.MarketPanel and self.MarketPanel:IsValid() then
+		if self.MarketPanel:IsVisible() then
+			self.MarketPanel:Close()
 		else
-			self.InventoryPanel:SetVisible(true)
-			self.InventoryPanel:MakePopup()
+			self.MarketPanel:SetVisible(true)
+			self.MarketPanel:MakePopup()
+			self.MarketPanel.PropertySheet:SwitchToName("Inventory")
 		end
-
 		return
 	end
 
-	local pnl = vgui.Create("ZSInventory")
+	local pnl = vgui.Create("ZSMarket")
 	if not pnl or not pnl:IsValid() then return end
 
-	self.InventoryPanel = pnl
-	self.InventoryPanel:SetSize(ScrW() * 0.4, ScrH() * 0.5)
-	self.InventoryPanel:Center()
-	self.InventoryPanel:SetVisible(true)
-	self.InventoryPanel:MakePopup()
+	self.MarketPanel = pnl
+	self.MarketPanel:Center()
+	self.MarketPanel:SetVisible(true)
+	self.MarketPanel:MakePopup()
 
-	if self.InventoryPanel.UpdateItems then
-		self.InventoryPanel:UpdateItems(self:Inventory_GetItems())
+	if self.MarketPanel.UpdateShop then
+		self.MarketPanel:UpdateShop(self.Shop.Catalog or {}, self.Shop.Coins or 0)
+	end
+	if self.MarketPanel.UpdateInventory then
+		self.MarketPanel:UpdateInventory(self:Inventory_GetItems())
 	end
 end
 

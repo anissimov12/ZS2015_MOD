@@ -10,8 +10,8 @@ function GM:Shop_SetData(coins, catalog)
 	self.Shop.Coins = tonumber(coins or 0) or 0
 	self.Shop.Catalog = catalog or {}
 
-	if self.ShopPanel and self.ShopPanel.UpdateItems then
-		self.ShopPanel:UpdateItems(self.Shop.Catalog, self.Shop.Coins)
+	if self.MarketPanel and self.MarketPanel.UpdateShop then
+		self.MarketPanel:UpdateShop(self.Shop.Catalog, self.Shop.Coins)
 	end
 end
 
@@ -45,27 +45,30 @@ function GM:OpenShop()
 
 	self:Shop_RequestUpdate()
 
-	if self.ShopPanel and self.ShopPanel:IsValid() then
-		if self.ShopPanel:IsVisible() then
-			self.ShopPanel:Close()
+	if self.MarketPanel and self.MarketPanel:IsValid() then
+		if self.MarketPanel:IsVisible() then
+			self.MarketPanel:Close()
 		else
-			self.ShopPanel:SetVisible(true)
-			self.ShopPanel:MakePopup()
+			self.MarketPanel:SetVisible(true)
+			self.MarketPanel:MakePopup()
+			self.MarketPanel.PropertySheet:SwitchToName("Shop")
 		end
 		return
 	end
 
-	local pnl = vgui.Create("ZSShop")
+	local pnl = vgui.Create("ZSMarket")
 	if not pnl or not pnl:IsValid() then return end
 
-	self.ShopPanel = pnl
-	self.ShopPanel:SetSize(ScrW() * 0.4, ScrH() * 0.5)
-	self.ShopPanel:Center()
-	self.ShopPanel:SetVisible(true)
-	self.ShopPanel:MakePopup()
+	self.MarketPanel = pnl
+	self.MarketPanel:Center()
+	self.MarketPanel:SetVisible(true)
+	self.MarketPanel:MakePopup()
 
-	if self.ShopPanel.UpdateItems then
-		self.ShopPanel:UpdateItems(self.Shop.Catalog or {}, self.Shop.Coins or 0)
+	if self.MarketPanel.UpdateShop then
+		self.MarketPanel:UpdateShop(self.Shop.Catalog or {}, self.Shop.Coins or 0)
+	end
+	if self.MarketPanel.UpdateInventory then
+		self.MarketPanel:UpdateInventory(self.Inventory.Items or {})
 	end
 end
 

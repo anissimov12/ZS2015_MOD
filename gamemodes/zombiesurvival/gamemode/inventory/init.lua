@@ -156,6 +156,32 @@ function GM:Inventory_GetItems(pl)
 	return data
 end
 
+function GM:Inventory_StackItems(inv)
+	if not inv then return end
+
+	local stacks = {}
+	for i = #inv, 1, -1 do
+		local it = inv[i]
+		if it then
+			local key = tostring(it.ID or it.id) .. "_" .. tostring(it.Category or "Items")
+			if not stacks[key] then
+				stacks[key] = {item = it, indices = {i}}
+			else
+				stacks[key].item.Count = (tonumber(stacks[key].item.Count) or 1) + (tonumber(it.Count) or 1)
+				table.insert(stacks[key].indices, i)
+			end
+		end
+	end
+	
+	for key, stack in pairs(stacks) do
+		if #stack.indices > 1 then
+			for i = 2, #stack.indices do
+				table.remove(inv, stack.indices[i])
+			end
+		end
+	end
+end
+
 function GM:Inventory_HandleClientRequest(pl, action, payload)
     if not IsValid(pl) then return end
 
@@ -199,10 +225,6 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
 		for i = #inv, 1, -1 do
 			local it = inv[i]
 			if it and tostring(it.ID or it.id) == tostring(id) then
-				if it.Category == "Equipped" then
-					break
-				end
-
 				local cur = tonumber(it.Count) or 1
 				local sellcount = math.min(cur, count)
 				local name = it.Name or id
@@ -234,32 +256,85 @@ function GM:Inventory_HandleClientRequest(pl, action, payload)
 			end
 		end
     elseif action == "equip" then
-        for _, it in ipairs(inv) do
-            if it and tostring(it.ID or it.id) == tostring(id) then
-                if not it.DefaultCategory then
-                    it.DefaultCategory = it.Category or "Items"
-                end
-                it.Category = "Equipped"
+		local foundIndex = nil
+		local foundItem = nil
+
+		for i, it in ipairs(inv) do
+			if it and tostring(it.ID or it.id) == tostring(id) and it.Category ~= "Equipped" then
+				foundIndex = i
+				foundItem = it
+				break
+			end
+		end
+		
+		if foundItem then
+			if not foundItem.DefaultCategory then
+				foundItem.DefaultCategory = foundItem.Category or "Items"
+			end
+			
+			local cur = tonumber(foundItem.Count) or 1
+			local equipcount = math.min(cur, count)
+
+			if equipcount < cur then
+				foundItem.Count = cur - equipcount
+
+				local equipped = table.Copy(foundItem)
+				equipped.Count = equipcount
+				equipped.Category = "Equipped"
+				table.insert(inv, equipped)
+				
 				if self.Notify_Send then
-					self:Notify_Send(pl, "Equipped " .. tostring(it.Name or id) .. ".", 3)
+					self:Notify_Send(pl, "Equipped " .. tostring(foundItem.Name or id) .. " x" .. tostring(equipcount) .. ".", 3)
 				end
-                -- self:Inventory_DebugPrint("Equipped item", it.Name or it.ID, "for", pl:Nick())
-            end
-        end
+			else
+				foundItem.Category = "Equipped"
+				if self.Notify_Send then
+					self:Notify_Send(pl, "Equipped " .. tostring(foundItem.Name or id) .. ".", 3)
+				end
+			end
+		end
     elseif action == "unequip" then
-        for _, it in ipairs(inv) do
-            if it and tostring(it.ID or it.id) == tostring(id) then
-                local def = it.DefaultCategory or "Items"
-                it.Category = def
+		local foundIndex = nil
+		local foundItem = nil
+
+		for i, it in ipairs(inv) do
+			if it and tostring(it.ID or it.id) == tostring(id) and it.Category == "Equipped" then
+				foundIndex = i
+				foundItem = it
+				break
+			end
+		end
+		
+		if foundItem then
+			local def = foundItem.DefaultCategory or "Items"
+			local cur = tonumber(foundItem.Count) or 1
+			local unequipcount = math.min(cur, count)
+
+			if unequipcount < cur then
+				foundItem.Count = cur - unequipcount
+
+				local unequipped = table.Copy(foundItem)
+				unequipped.Count = unequipcount
+				unequipped.Category = def
+				table.insert(inv, unequipped)
+				
 				if self.Notify_Send then
-					self:Notify_Send(pl, "Unequipped " .. tostring(it.Name or id) .. ".", 3)
+					self:Notify_Send(pl, "Unequipped " .. tostring(foundItem.Name or id) .. " x" .. tostring(unequipcount) .. ".", 3)
 				end
-                -- self:Inventory_DebugPrint("Unequipped item", it.Name or it.ID, "for", pl:Nick())
-            end
-        end
+			else
+				foundItem.Category = def
+				if self.Notify_Send then
+					self:Notify_Send(pl, "Unequipped " .. tostring(foundItem.Name or id) .. ".", 3)
+				end
+			end
+		end
     end
 
     self.Inventory.Data[pl] = inv
+
+	if self.Inventory_StackItems then
+		self:Inventory_StackItems(inv)
+	end
 
     if self.Inventory_SavePlayer then
         self:Inventory_SavePlayer(pl)

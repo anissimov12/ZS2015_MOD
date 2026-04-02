@@ -9,7 +9,7 @@
 -- fallback (add this in db)
 PVERS = {
 	type    = "a",   -- a (alpha) | b (beta) | r (release)
-	version = "0.3.2",
+	version = "0.4.0",
 }
 
 PVERS.string = PVERS.type .. PVERS.version .. "v"

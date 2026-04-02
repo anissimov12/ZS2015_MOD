@@ -207,23 +207,8 @@ function MakepWorth()
 	propertysheet:StretchToParent(4, 24, 4, 50)
 	propertysheet.Paint = function() end
 
-	-- Helper function to style scrollbar
 	local function StyleScrollbar(list)
-		if list.VBar then
-			list.VBar:SetWide(12)
-			list.VBar.Paint = function(self, w, h)
-				draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 80))
-			end
-			list.VBar.btnGrip.Paint = function(self, w, h)
-				draw.RoundedBox(2, 2, 0, w - 4, h, Color(60, 60, 60, 80))
-			end
-			list.VBar.btnUp.Paint = function(self, w, h)
-				draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 80))
-			end
-			list.VBar.btnDown.Paint = function(self, w, h)
-				draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 80))
-			end
-		end
+		-- 
 	end
 
 	local list = vgui.Create("DPanelList", propertysheet)

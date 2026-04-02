@@ -3,6 +3,16 @@ GM.Author	=	"William \"JetBoom\" Moodhe"
 GM.Email	=	"williammoodhe@gmail.com"
 GM.Website	=	"http://www.noxiousnet.com"
 
+--[[
+	Хорошие плейлисты для заперания себя, в самом себе~ :3
+
+	https://soundcloud.com/cupsizeeeeee/sets/kak-isportit-vecherinku
+	https://soundcloud.com/semataryy/sets/sematary-rainbow-bridge
+	https://soundcloud.com/cupsizeeeeee/sets/deli-na-dva
+	https://soundcloud.com/swqhic/sets/rebzyxx
+	https://soundcloud.com/vlad1488eshkere/sets/the-pink-valley-ost
+]]
+
 -- No, adding a gun doesn't make your name worth being here.
 GM.Credits = {
 	{"William \"JetBoom\" Moodhe", "williammoodhe@gmail.com (www.noxiousnet.com)", "Creator / Programmer"},

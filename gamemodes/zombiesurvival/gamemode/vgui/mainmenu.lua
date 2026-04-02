@@ -1,4 +1,3 @@
---local MainMenu
 GM.REVISION = 4352
 
 function GM:OpenMainMenu()
@@ -27,8 +26,6 @@ function GM:OpenMainMenu()
 	credittext:SetText("Zombie Survival (r"..self.REVISION..") - created by William \"JetBoom\" Moodhe")
 	credittext:SetContentAlignment(6)
 	credittext:Dock(FILL)
-
-	-- Tooltip section...
 
 	button = vgui.Create("ZSMenuButton", MainMenu)
 	button:SetText("QUIT")

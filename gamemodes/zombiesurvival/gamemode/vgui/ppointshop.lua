@@ -277,26 +277,10 @@ function GM:OpenPointsShop()
 
 	local isclassic = GAMEMODE:IsClassicMode()
 
-	-- Helper function to style scrollbar
 	local function StyleScrollbar(list)
-		if list.VBar then
-			list.VBar:SetWide(12)
-			list.VBar.Paint = function(self, w, h)
-				draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 80))
-			end
-			list.VBar.btnGrip.Paint = function(self, w, h)
-				draw.RoundedBox(2, 2, 0, w - 4, h, Color(60, 60, 60, 80))
-			end
-			list.VBar.btnUp.Paint = function(self, w, h)
-				draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 80))
-			end
-			list.VBar.btnDown.Paint = function(self, w, h)
-				draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 80))
-			end
-		end
+		-- 
 	end
 
-	-- Helper function to create an item panel
 	local function CreateItemPanel(tab, i, list)
 		local itempan = vgui.Create("DPanel")
 		itempan:SetSize(list:GetWide(), 40)

@@ -1,10 +1,9 @@
--- Sometimes persistent ones don't get created.
--- Sometimes persistent ones don't get created.
-local dummy = CreateClientConVar("_zs_dummyconvar", 1, false, false)
-local oldCreateClientConVar = CreateClientConVar
-function CreateClientConVar(...)
-	return oldCreateClientConVar(...) or dummy
-end
+--[[
+	Хорошие плейлисты для фантазии~ :3
+
+	https://soundcloud.com/cupsizeeeeee/sets/prygayduravishlist
+	https://soundcloud.com/blizzard-09/sets/mass-shooting
+]]
 
 include("shared.lua")
 include("cl_draw.lua")
@@ -41,8 +40,7 @@ include("vgui/pweapons.lua")
 include("vgui/pendboard.lua")
 include("vgui/pworth.lua")
 include("vgui/ppointshop.lua")
-include("vgui/pinventory.lua")
-include("vgui/pshop.lua")
+include("vgui/pmarket.lua")
 include("vgui/pnotify.lua")
 include("vgui/dpingmeter.lua")
 include("vgui/dsidemenu.lua")
@@ -66,6 +64,12 @@ hook.Add("InitPostEntity", "GetLocal", function()
 	gamemode.Call("HookGetLocal", MySelf)
 	RunConsoleCommand("initpostentity")
 end)
+
+local dummy = CreateClientConVar("_zs_dummyconvar", 1, false, false)
+local oldCreateClientConVar = CreateClientConVar
+function CreateClientConVar(...)
+	return oldCreateClientConVar(...) or dummy
+end
 
 -- Remove when model decal crash is fixed.
 function util.Decal()

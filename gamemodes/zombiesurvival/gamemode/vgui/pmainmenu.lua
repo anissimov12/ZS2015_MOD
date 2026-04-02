@@ -176,23 +176,9 @@ function GM:ShowHelp()
 
 	local but = vgui.Create("DButton", menu)
 	but:SetFont("ZSHUDFontSmaller")
-	but:SetText("Inventory")
+	but:SetText("Market")
 	but:SetTall(32)
 	but:DockMargin(0, 16, 0, 12)
-	but:DockPadding(0, 12, 0, 12)
-	but:Dock(TOP)
-	but.DoClick = function()
-		local gm = GAMEMODE or GM
-		if gm and gm.OpenInventory then
-			gm:OpenInventory()
-		end
-	end
-
-	local but = vgui.Create("DButton", menu)
-	but:SetFont("ZSHUDFontSmaller")
-	but:SetText("Shop")
-	but:SetTall(32)
-	but:DockMargin(0, 0, 0, 12)
 	but:DockPadding(0, 12, 0, 12)
 	but:Dock(TOP)
 	but.DoClick = function()
