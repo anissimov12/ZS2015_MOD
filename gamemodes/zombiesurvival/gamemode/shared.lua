@@ -25,6 +25,7 @@ GM.Credits = {
 
 include("nixthelag.lua")
 include("buffthefps.lua")
+include("sh_logging.lua")
 
 function GM:GetNumberOfWaves()
 	local default = GetGlobalBool("classicmode") and 10 or self.NumberOfWaves

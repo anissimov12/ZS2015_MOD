@@ -150,7 +150,6 @@ local function SaveCurrentCart(name)
 			cart[2] = tobuy
 
 			file.Write(GAMEMODE.CartFile, Serialize(GAMEMODE.SavedCarts))
-			print("Saved cart "..tostring(name))
 
 			LoadCart(i, true)
 			return
@@ -160,7 +159,6 @@ local function SaveCurrentCart(name)
 	GAMEMODE.SavedCarts[#GAMEMODE.SavedCarts + 1] = {name, tobuy}
 
 	file.Write(GAMEMODE.CartFile, Serialize(GAMEMODE.SavedCarts))
-	print("Saved cart "..tostring(name))
 
 	LoadCart(#GAMEMODE.SavedCarts, true)
 end

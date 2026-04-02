@@ -1,3 +1,5 @@
+-- поместить в market/shp/cl_init.lua 
+
 local GM = GM or GAMEMODE
 
 GM.Shop = GM.Shop or {}

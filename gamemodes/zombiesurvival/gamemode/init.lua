@@ -16,6 +16,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 
 AddCSLuaFile("sh_translate.lua")
+AddCSLuaFile("sh_logging.lua")
 AddCSLuaFile("sh_colors.lua")
 AddCSLuaFile("sh_serialization.lua")
 AddCSLuaFile("sh_globals.lua")

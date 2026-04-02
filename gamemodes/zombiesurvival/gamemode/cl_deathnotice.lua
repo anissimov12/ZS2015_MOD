@@ -183,8 +183,6 @@ net.Receive("zs_pl_kill_pl", function(length)
 
 		victim:CallZombieFunction("OnKilled", attacker, attacker, attacker == victim, headshot, DamageInfo())
 
-		print(attackername.." killed "..victimname.." with "..inflictor)
-
 		--gamemode.Call("AddDeathNotice", attackername, attackerteam, inflictor, victimname, victimteam, headshot)
 		GAMEMODE:TopNotify(attacker, " ", {killicon = inflictor, headshot = headshot}, " ", victim)
 	end
@@ -213,8 +211,6 @@ net.Receive("zs_pls_kill_pl", function(length)
 
 		victim:CallZombieFunction("OnKilled", attacker, attacker, attacker == victim, headshot, DamageInfo())
 
-		print(attackername.." and "..assistername.." killed "..victimname.." with "..inflictor)
-
 		--gamemode.Call("AddDeathNotice", attackername.." and "..assistername, attackerteam, inflictor, victimname, victimteam, headshot)
 		GAMEMODE:TopNotify(attacker, " and ", assister, " ", {killicon = inflictor, headshot = headshot}, " ", victim)
 	end
@@ -232,8 +228,6 @@ net.Receive("zs_pl_kill_self", function(length)
 		victim:CallZombieFunction("OnKilled", victim, victim, true, false, DamageInfo())
 
 		local victimname = victim:Name()
-
-		print(victimname.." killed themself")
 
 		--gamemode.Call("AddDeathNotice", nil, 0, "suicide", victimname, victimteam)
 		GAMEMODE:TopNotify({killicon = "suicide"}, " ", victim)
@@ -269,8 +263,6 @@ net.Receive("zs_death", function(length)
 		victim:CallZombieFunction("OnKilled", attacker, NULL, attacker == victim, false, DamageInfo())
 
 		local victimname = victim:Name()
-
-		print(victimname.." was killed by "..attacker.." with "..inflictor)
 
 		--gamemode.Call("AddDeathNotice", attacker, -1, inflictor, victimname, victimteam)
 		GAMEMODE:TopNotify(COLOR_RED, attacker, " ", {deathicon = inflictor}, " ", victim)

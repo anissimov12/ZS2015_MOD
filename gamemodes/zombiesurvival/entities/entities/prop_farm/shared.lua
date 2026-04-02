@@ -11,7 +11,7 @@ ENT.ModelBreakAnimation = true
 
 ENT.Model = "models/props/cs_office/computer_caseB.mdl"
 ENT.MaxPoints = 20
-ENT.PointPerSec = 0.19
+ENT.PointPerSec = 0.13
 ENT.EqWeapon = "weapon_zs_farm"
 
 ENT.vOffset = Vector(0, 0, 24.5)

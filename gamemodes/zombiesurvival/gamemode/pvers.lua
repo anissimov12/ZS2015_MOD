@@ -4,14 +4,12 @@
 	Add 1.x.x upon release
 	Add x.1.x when loading content and mechanics
 	Add x.x.1 when fixing bugs and adding patches
-
-	TODO RU: Добавить привязку версии в базе данных other/PVERS <- структура
 ]]--
 
 -- fallback (add this in db)
 PVERS = {
 	type    = "a",   -- a (alpha) | b (beta) | r (release)
-	version = "0.3.1",
+	version = "0.3.2",
 }
 
 PVERS.string = PVERS.type .. PVERS.version .. "v"
@@ -36,10 +34,9 @@ if SERVER then
 		--     self.string = self.type .. self.version .. "v"
 		-- end
 		
-		print("[ZS] Version loaded: " .. self.string)
+		ZSLogModule("PVERS", "Version loaded: " .. self.string)
 	end
-	
-	-- Send version to player on spawn
+
 	hook.Add("PlayerInitialSpawn", "PVERS_SendToClient", function(pl)
 		timer.Simple(1, function()
 			if IsValid(pl) then
@@ -47,15 +44,13 @@ if SERVER then
 			end
 		end)
 	end)
-	
-	-- Load version on server start
+
 	hook.Add("Initialize", "PVERS_LoadFromDB", function()
 		PVERS:LoadFromDatabase()
 	end)
 end
 
 if CLIENT then
-	-- Receive version from server
 	net.Receive("zs_pvers_sync", function()
 		local vtype = net.ReadString()
 		local vversion = net.ReadString()
@@ -64,7 +59,7 @@ if CLIENT then
 		PVERS.version = vversion
 		PVERS.string = vtype .. vversion .. "v"
 		
-		print("[ZS] Version synced from server: " .. PVERS.string)
+		ZSLogModule("PVERS", "Version synced from server: " .. PVERS.string)
 	end)
 	
 	surface.CreateFont("PVersFont", {

@@ -1,3 +1,5 @@
+-- поместить в market/notf/cl_init.lua 
+
 local GM = GM or GAMEMODE
 
 GM.Notify = GM.Notify or {}

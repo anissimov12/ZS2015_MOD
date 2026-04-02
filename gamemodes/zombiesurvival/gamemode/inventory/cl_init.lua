@@ -1,3 +1,5 @@
+-- поместить в market/inv/cl_init.lua 
+
 local GM = GM or GAMEMODE
 
 GM.Inventory = GM.Inventory or {}

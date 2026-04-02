@@ -3,9 +3,10 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-ENT.m_NextStrainSound = 0
-ENT.RepairInterval = 1.15 --Repair interval in seconds
-ENT.RepairStrength = 1.168 --Repair strength
+ENT.Base = "prop_nail"
+ENT.RepairInterval = 1.25  -- Repair interval in seconds
+ENT.RepairStrength = 1.168 -- Repair strength multiplier
+
 hook.Add("PlayerInitialSpawn", "ElectroNailPlayerInitialSpawn", function(pl)
 	local uid = pl:UniqueID()
 
@@ -16,98 +17,28 @@ hook.Add("PlayerInitialSpawn", "ElectroNailPlayerInitialSpawn", function(pl)
 	end
 end)
 
-function ENT:Initialize()
-	self:SetModel("models/crossbow_bolt.mdl")
-	self.m_NailUnremovable = self.m_NailUnremovable or false
-	self.HealthOveride = self.HealthOveride or -1
-	self.HealthMultiplier = self.HealthMultiplier or 1
-end
-
-function ENT:OnDamaged(damage, attacker, inflictor, dmginfo)
-	if CurTime() >= self.m_NextStrainSound then
-		self.m_NextStrainSound = CurTime() + math.min(damage * 0.025, 1)
-		self:EmitSound("physics/metal/metal_box_impact_hard"..math.random(3)..".wav", math.Clamp(damage * 2.5, 60, 80), math.min(255, 150 + (1 - (self:GetNailHealth() / self:GetMaxNailHealth())) * 100))
-	end
-end
-
 function ENT:AttachTo(baseent, attachent, physbone, physbone2)
-	self:SetBaseEntity(baseent)
-	self:SetAttachEntity(attachent, physbone, physbone2)
-
-	if not baseent.Nails then baseent.Nails = {} end
-	if not attachent.Nails then attachent.Nails = {} end
-
-	table.insert(baseent.Nails, self)
-	table.insert(attachent.Nails, self)
-
-	self:SetParentPhysNum(physbone or 0)
-	self:SetParent(baseent)
-
-	if baseent:IsValid() then
-		baseent:CollisionRulesChanged()
-	end
-	if attachent:IsValid() then
-		attachent:CollisionRulesChanged()
-	end
-
-	if baseent:GetBarricadeHealth() == 0 then
-		local health = baseent:GetDefaultBarricadeHealth()
-		if self.HealthOveride and self.HealthOveride > 0 then health = self.HealthOveride end
-		health = health * (self.HealthMultiplier or 1)
-		baseent:SetMaxBarricadeHealth(health)
-		baseent:SetBarricadeHealth(health)
-		baseent:SetBarricadeRepairs(baseent:GetMaxBarricadeRepairs())
-	end
+	self.BaseClass.AttachTo(self, baseent, attachent, physbone, physbone2)
 
 	if baseent:IsValid() and not baseent:IsWorld() then
 		if not baseent.m_ElectroNailNextRepair then
-			local electronails = 0
-			if baseent.Nails then
-				for _, nail in pairs(baseent.Nails) do
-					if nail:IsValid() and nail:GetClass() == "prop_electronail" then
-						electronails = electronails + 1
-					end
-				end
-			end
+			local electronails = self:CountElectroNails(baseent)
 			local interval = self.RepairInterval + 0.75 * math.max(electronails - 1, 0)
 			baseent.m_ElectroNailNextRepair = CurTime() + interval
 		end
 	end
 end
 
-function ENT:SetNailConstraint(const)
-	self.m_Constraint = const
-end
-
-function ENT:GetNailConstraint()
-	return self.m_Constraint or NULL
-end
-
-function ENT:SetOwnerUID(uid)
-	self.OwnerUID = uid
-end
-
-function ENT:GetOwnerUID()
-	return self.OwnerUID
-end
-
-function ENT:SetDeployer(pl)
-	if not pl then return end
-
-	if type(pl) == "string" then
-		self:SetDTString(0, pl)
-		self:SetOwner(NULL)
-		self:SetOwnerUID(nil)
-	elseif pl:IsValid() then
-		self:SetDTString(0, "")
-		self:SetOwner(pl)
-		self:SetOwnerUID(pl:UniqueID())
+function ENT:CountElectroNails(ent)
+	local count = 0
+	if ent.Nails then
+		for _, nail in pairs(ent.Nails) do
+			if nail:IsValid() and nail:GetClass() == "prop_electronail" then
+				count = count + 1
+			end
+		end
 	end
-end
-
-function ENT:SetNewHealth(health)
-	baseent = self:GetBaseEntity()
-	baseent:SetBarricadeHealth(health)
+	return count
 end
 
 function ENT:AutoRepair()
@@ -118,15 +49,7 @@ function ENT:AutoRepair()
 		return
 	end
 
-	local electronails = 0
-	if baseent.Nails then
-		for _, nail in pairs(baseent.Nails) do
-			if nail:IsValid() and nail:GetClass() == "prop_electronail" then
-				electronails = electronails + 1
-			end
-		end
-	end
-
+	local electronails = self:CountElectroNails(baseent)
 	if electronails <= 0 then return end
 
 	local healstrength = (GAMEMODE.NailHealthPerRepair or 10) * self.RepairStrength
@@ -156,14 +79,7 @@ function ENT:Think()
 	end
 
 	if not baseent.m_ElectroNailNextRepair then
-		local electronails = 0
-		if baseent.Nails then
-			for _, nail in pairs(baseent.Nails) do
-				if nail:IsValid() and nail:GetClass() == "prop_electronail" then
-					electronails = electronails + 1
-				end
-			end
-		end
+		local electronails = self:CountElectroNails(baseent)
 		local interval = self.RepairInterval + 0.865 * math.max(electronails - 1, 0)
 		baseent.m_ElectroNailNextRepair = CurTime() + interval
 	end
@@ -171,7 +87,7 @@ function ENT:Think()
 	if CurTime() >= baseent.m_ElectroNailNextRepair then
 		if not baseent.m_ElectroNailRepairing then
 			baseent.m_ElectroNailRepairing = true
-			
+
 			if baseent.Nails then
 				for _, nail in pairs(baseent.Nails) do
 					if nail:IsValid() and nail:GetClass() == "prop_electronail" then
@@ -179,15 +95,8 @@ function ENT:Think()
 					end
 				end
 			end
-			
-			local electronails = 0
-			if baseent.Nails then
-				for _, nail in pairs(baseent.Nails) do
-					if nail:IsValid() and nail:GetClass() == "prop_electronail" then
-						electronails = electronails + 1
-					end
-				end
-			end
+
+			local electronails = self:CountElectroNails(baseent)
 			local interval = self.RepairInterval + 0.865 * math.max(electronails - 1, 0)
 			baseent.m_ElectroNailNextRepair = CurTime() + interval
 			baseent.m_ElectroNailRepairing = false
@@ -196,66 +105,5 @@ function ENT:Think()
 
 	self:NextThink(CurTime() + 0.1)
 	return true
-end
-
-function ENT:AcceptInput(name, activator, caller, args)
-	name = string.lower(name)
-	if name == "attachto" then
-		local ent = ents.FindByName(args)[1]
-		if ent and ent:IsValid() then
-			self:SetParent(ent)
-		end
-
-		return true
-	elseif name == "nailto" then
-		if self:GetParent():IsValid() then
-			local ent = args == "worldspawn" and game.GetWorld() or ents.FindByName(args)[1]
-			if ent then
-				self:AttachTo(self:GetParent(), ent)
-			end
-		end
-
-		return true
-	elseif name == "setname" or name == "setdeployer" then
-		self:SetDeployer(args)
-
-		return true
-	elseif name == "sethealth" then
-		self:SetNewHealth(args)
-		
-		return true
-	elseif name == "setunremoveable" or name == "setunremovable" then
-		self.m_NailUnremovable = tonumber(args) == 1
-
-		return true
-	elseif name == "toggleunremoveable" or name == "toggleunremovable" then
-		self.m_NailUnremovable = not self.m_NailUnremovable
-
-		return true
-	end
-end
-
-function ENT:OnRemove()
-	if self.m_IsRemoving then return end
-
-	local baseent = self:GetBaseEntity()
-	if baseent:IsValid() and not baseent:IsWorld() then
-		baseent:RemoveNail(self, nil, nil, true)
-	end
-	local attachent = self:GetAttachEntity()
-	if attachent:IsValid() and not attachent:IsWorld() then
-		attachent:RemoveNail(self, nil, nil, true)
-	end
-end
-
-function ENT:KeyValue(key, value)
-	key = string.lower(key)
-	if key == "unremoveable" or key == "unremovable" then
-		self.m_NailUnremovable = tonumber(value) == 1
-	elseif key == "healthoverride" then
-		self.HealthOveride = tonumber(value)
-	elseif key == "healthmultiplier" then
-		self.HealthMultiplier = tonumber(value)
-	end
 end
 

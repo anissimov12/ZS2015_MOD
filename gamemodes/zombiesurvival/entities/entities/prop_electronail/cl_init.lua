@@ -1,34 +1,7 @@
 include("shared.lua")
 
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
-
-function ENT:OnRemove()
-	local normal = self:GetForward() * -1
-	local pos = self:GetPos() + normal
-
-	sound.Play("physics/metal/metal_box_impact_bullet"..math.random(1, 3)..".wav", pos, 75, math.random(90, 110))
-
-	local grav = Vector(0, 0, -300)
-
-	local emitter = ParticleEmitter(pos)
-	emitter:SetNearClip(22, 32)
-	for i=1, math.random(32, 48) do
-		local vNormal = (VectorRand() * 0.6 + normal):GetNormalized()
-		local particle = emitter:Add("effects/spark", pos + vNormal)
-		particle:SetVelocity(vNormal * math.Rand(16, 100))
-		particle:SetDieTime(math.Rand(0.5, 1))
-		particle:SetStartAlpha(255)
-		particle:SetEndAlpha(255)
-		particle:SetStartSize(math.Rand(0.4, 1.5))
-		particle:SetEndSize(0)
-		particle:SetRoll(math.Rand(0, 360))
-		particle:SetRollDelta(math.Rand(-8, 8))
-		particle:SetCollide(true)
-		particle:SetBounce(0.8)
-		particle:SetGravity(grav)
-	end
-	emitter:Finish()
-end
+ENT.Base = "prop_nail"
 
 local matOutlineWhite = Material("white_outline")
 local ScaleOutline = 1.4

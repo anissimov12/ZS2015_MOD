@@ -1,4 +1,8 @@
+-- поместить в market/shp/init.lua 
+
 local GM = GM or GAMEMODE
+
+-- TODO: нахуй JSON RAW -> SQL лучше
 
 GM.Shop = GM.Shop or {}
 GM.Shop.Data = GM.Shop.Data or {}
@@ -202,7 +206,11 @@ hook.Add("ShutDown", "ZS_Shop_SaveAll", function()
 	end
 end)
 
+-- add coin for `ply`
+
 concommand.Add("zs_shop_add", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	
 	local amount = tonumber(args[1] or 0) or 0
 	if amount == 0 then return end
 
@@ -215,7 +223,11 @@ concommand.Add("zs_shop_add", function(ply, cmd, args)
 	gm:Shop_AddCoins(tgt, amount)
 end)
 
+-- set coin for `ply`
+
 concommand.Add("zs_shop_set", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	
 	local amount = tonumber(args[1] or 0) or 0
 
 	local tgt = Shop_FindPlayer(args[2], ply)
@@ -227,12 +239,16 @@ concommand.Add("zs_shop_set", function(ply, cmd, args)
 	gm:Shop_SetCoins(tgt, amount)
 end)
 
+-- fetch info about coins `ply`
+
 concommand.Add("zs_shop_info", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	
 	local tgt = Shop_FindPlayer(args[1], ply)
 	if not IsValid(tgt) then return end
 
 	local gm = GAMEMODE or GM
 	if not gm or not gm.Shop_GetCoins then return end
 
-	print("[ZS Shop] Coins for", tgt:Nick(), "(", tgt:SteamID(), "):", gm:Shop_GetCoins(tgt))
+	ZSLogModule("Shop", "Coins for " .. tgt:Nick() .. " (" .. tgt:SteamID() .. "): " .. gm:Shop_GetCoins(tgt))
 end)

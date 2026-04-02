@@ -1,4 +1,8 @@
+-- поместить в market/inv/init.lua 
+
 local GM = GM or GAMEMODE
+
+-- TODO: нахуй JSON RAW -> SQL лучше
 
 GM.Inventory = GM.Inventory or {}
 GM.Inventory.Data = GM.Inventory.Data or {}
@@ -299,7 +303,7 @@ end)
 
 -- Debug helper
 function GM:Inventory_DebugPrint(...)
-	-- print("[ZS Inventory]", ...)
+	ZSLogDebug("Inventory", ...)
 end
 
 function GM:Inventory_GiveEquippedForPlayer(pl)
@@ -422,6 +426,8 @@ local function Inventory_FindPlayer(arg, caller)
 end
 
 concommand.Add("zs_inv_add", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	
 	local id = args[1]
 	if not id or id == "" then return end
 
@@ -468,6 +474,8 @@ concommand.Add("zs_inv_add", function(ply, cmd, args)
 end)
 
 concommand.Add("zs_inv_del", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	
 	local id = args[1]
 	if not id or id == "" then return end
 
@@ -513,6 +521,8 @@ concommand.Add("zs_inv_del", function(ply, cmd, args)
 end)
 
 concommand.Add("zs_inv_info", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	
 	local tgt = Inventory_FindPlayer(args[1], ply)
 	if not IsValid(tgt) then return end
 
@@ -520,8 +530,8 @@ concommand.Add("zs_inv_info", function(ply, cmd, args)
 	if not gm then return end
 
 	local inv = gm:Inventory_GetItems(tgt)
-	print("[ZS Inventory] Inventory for", tgt:Nick(), "(", tgt:SteamID(), ")")
+	ZSLogModule("Inventory", "Inventory for " .. tgt:Nick() .. " (" .. tgt:SteamID() .. ")")
 	for _, it in ipairs(inv) do
-		print(" ", tostring(it.ID), "|", tostring(it.Name), "|", tostring(it.Category), "| x" .. tostring(it.Count or 1))
+		ZSLogModule("Inventory", "  " .. tostring(it.ID) .. " | " .. tostring(it.Name) .. " | " .. tostring(it.Category) .. " | x" .. tostring(it.Count or 1))
 	end
 end)
